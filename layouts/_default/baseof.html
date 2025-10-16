@@ -1,14 +1,20 @@
 <!DOCTYPE html>
-<html lang="{{ .Language.Lang }}">
+<html lang="{{ .Language.Lang }}" class="h-full scroll-smooth">
 
 <head>
     {{ partial "head.html" . }}
 </head>
 
-<body class="bg-zinc-100 dark:bg-gray-800">
+<body x-data class="bg-elm-100 dark:bg-primary-200 flex flex-col min-h-screen">
     {{ partial "nav.html" . }}
+    <!-- Wrap your main content in a flex-grow container -->
+
     {{ block "main" . }}{{ end }}
+
     {{ partial "footer" . }}
+    
+  {{ partial "lightbox-root.html" . }}
+  {{ partial "lightbox-init.html" . }}
 </body>
 
 </html>

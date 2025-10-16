@@ -1,0 +1,11 @@
+{{/* layouts/partials/section-header.html
+  Params:
+    - title: string (erforderlich)
+    - kicker: string (optional)
+    - intro: string (optional)
+*/}}
+<header class="stack-md">
+  {{ with .kicker }}<p class="text-sm font-semibold uppercase tracking-wider text-elm-600">{{ . }}</p>{{ end }}
+  {{ with .title }}<h2 class="h2">{{ . }}</h2>{{ end }}
+  {{ with .intro }}<p class="lead">{{ . }}</p>{{ end }}
+</header>

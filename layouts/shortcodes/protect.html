@@ -1,0 +1,23 @@
+{{- /* Shortcode: protect
+     Usage:
+       {{< protect type="email" email="kontakt@christustreff-mering.de" >}}
+       {{< protect type="phone" phone="+49 821 1234567" >}}
+       Optional:
+       {{< protect type="email" email="..." label="E-Mail anzeigen" >}}
+*/ -}}
+{{- $type  := .Get "type" | default "email" -}}
+{{- $label := .Get "label" -}}
+{{- $value := cond (eq $type "phone") (.Get "phone") (.Get "email") -}}
+{{- if not $value }}{{ errorf "protect shortcode: provide email= or phone= (type=%q)" $type }}{{ end -}}
+{{- $b64 := $value | base64Encode -}}
+{{- if eq $label "" -}}
+  {{- $label = cond (eq $type "phone") "[Nummer anzeigen]" "[Adresse anzeigen]" -}}
+{{- end -}}
+
+<span class="ct-protect cursor-pointer text-gray-900"
+      data-type="{{ $type }}"
+      data-b64="{{ $b64 }}">
+  <span class="opacity-70 hover:opacity-100 select-none">{{ $label }}</span>
+  <noscript><span class="text-red-600 ml-2">[JavaScript erforderlich]</span></noscript>
+</span>
+

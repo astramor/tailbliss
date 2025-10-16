@@ -1,0 +1,92 @@
+termine:
+#November
+  - date: "03.11."
+    prediger: "Friedrich Meyer"
+    thema: "Zweifeln erlaubt?!"
+    icon1: "icon-[material-symbols--family-star-outline]" # Wenn die Zeile gefüllt ist, wird der Stern für den Kigo angezeigt
+    icon2: "" #Wenn die Zeile gefüllt ist, wird der Kelch für das Abendmahl angezeigt
+#neuer Gottesdiensttermin
+  - date: "10.11."
+    prediger: "Johann Siemens"
+    thema: "Fürchte dich nicht"
+    icon1: "icon-[material-symbols--family-star-outline]"
+    icon2: ""
+#neuer Gottesdiensttermin    
+  - date: "17.11."
+    prediger: "Markus Krause"
+    thema: "Brückenbauen statt Mauern Röm 14,7-13"
+    icon1: "icon-[material-symbols--family-star-outline]"
+    icon2: "icon-[material-symbols--trophy-outline]"
+#neuer Gottesdiensttermin    
+  - date: "24.11."
+    prediger: "Markus Krause"
+    thema: "Mit Tränen säen, mit Freuden ernten Psalm 126" 
+    icon1: "icon-[material-symbols--family-star-outline]"
+    icon2: ""    
+#Dezember   
+  - date: "01.12."
+    prediger: "Jochen Högendörfer"
+    thema: "Jubiläum - Kann man Liebe lernen? Röm 13,8-12"
+    icon1: "icon-[material-symbols--family-star-outline]"
+    icon2: ""
+#neuer Gottesdiensttermin    
+  - date: "08.12."
+    prediger: "Markus Krause"
+    thema: "Der verheißene König Jesja 11,1-10"
+    icon1: ""
+    icon2: ""
+#neuer Gottesdiensttermin    
+  - date: "15.12."
+    prediger: "Jens Schütz"
+    thema: "noch offen"
+    icon1: "icon-[material-symbols--family-star-outline]"
+    icon2: ""
+#neuer Gottesdiensttermin    
+  - date: "22.12."
+    prediger: "Markus Krause"
+    thema: "Der Bote des Königs Mt 3, 1-12"
+    icon1: ""
+    icon2: ""
+#neuer Gottesdiensttermin    
+  - date: "24.12."
+    prediger: "Markus Krause"
+    thema: "16:00 Uhr Theater - Die Geburts des Königs Lk 2,1-20"
+    icon1: ""
+    icon2: ""
+#neuer Gottesdiensttermin    
+  - date: "29.12."
+    prediger: "Markus Krause"
+    thema: "Der König unter uns Mt 1, 18-25"
+    icon1: ""
+    icon2: ""
+#neuer Gottesdiensttermin         
+  - date: "31.12."
+    prediger: "Markus Krause"
+    thema: " 17:00 Uhr Die neue Schöpfung des Königs Off 22,1-6"
+    icon1: ""
+    icon2: "icon-[material-symbols--trophy-outline]"                      
+# Januar
+  - date: "05.01."
+    prediger: "Friedrich Meyer"
+    thema: "Jahreslosung"
+    icon1: ""
+    icon2: ""
+#neuer Gottesdiensttermin         
+  - date: "12.01."
+    prediger: "Markus Krause"
+    thema: "Angeben 1. Kor 1,26–31"
+    icon1: "icon-[material-symbols--family-star-outline]"
+    icon2: ""      
+#neuer Gottesdiensttermin         
+  - date: "19.01."
+    prediger: "Markus Krause"
+    thema: "Wasser, Wein und Wunder Joh 2,1-12"
+    icon1: "icon-[material-symbols--family-star-outline]"
+    icon2: "icon-[material-symbols--trophy-outline]"  
+#neuer Gottesdiensttermin         
+  - date: "26.01."
+    prediger: "Damaris Luther"
+    thema: "Familiengottesdienst"
+    icon1: ""
+    icon2: ""      
+

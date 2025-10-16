@@ -1,0 +1,571 @@
+{{ define "main" }}
+
+
+  <!-- =========================================================
+       HERO / JUMBOTRON
+       ========================================================= -->
+  <div class="w-full mb-4 bg-primary-600">
+    {{ with .Params.featured_image }}
+      {{ with resources.Get . }}
+        {{ $w480  := .Fill "854x480 webp q80" }}
+        {{ $w960  := .Fill "1706x960 webp q80" }}
+        {{ $w1600 := .Fill "2844x1600 webp q80" }}
+        {{ $srcset := printf "%s 480w, %s 960w, %s 1600w" $w480.RelPermalink $w960.RelPermalink $w1600.RelPermalink }}
+        <picture>
+          <source type="image/webp" srcset="{{ $srcset }}" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1280px">
+          <img
+            src="{{ $w960.RelPermalink }}"
+            srcset="{{ $srcset }}"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1280px"
+            alt="{{ with $.Params.featured_alt }}{{ . }}{{ else }}{{ $.Title }}{{ end }}"
+            class="sm:h-[13em] lg:h-[14rem] w-full object-cover border-2 border-elm-600"
+            decoding="async" loading="eager"
+            style="background-position:70%;">
+        </picture>
+      {{ end }}
+    {{ else }}
+       <div class="sm:h-[16em] lg:h-[32rem] min-h-[16em] max-h-[32rem] border-[1px] sm:border-2 border-elm-600 bg-primary-600"></div>
+    {{ end }}
+  </div>
+
+  <main>
+  <!-- =========================================================
+       WILLKOMMEN / INTRO
+       ========================================================= -->
+    {{ with .Params.gottesdienst }}
+    <section class="bg-elm-100 py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
+     <div class="max-w-4xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          <!-- Text -->
+    <header class="text-center md:text-left">
+      {{ with .subtitle }}
+        <!-- War vorher H2; jetzt reiner Text-Claim -->
+         <p class="text-sm sm:text-base font-semibold text-elm-500 animate-fade-in">{{ . }}</p>
+      {{ end }}
+      {{ with .title }}
+        <!-- Hauptüberschrift der Seite -->
+                  <h1 class="mt-2 text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-gray-900 animate-fade-in">
+            {{ . }}
+          </h1>
+      {{ end }}
+
+      {{ with .intro }}
+        <!-- Einleitender Text; typografisch etwas größer -->
+       <p class="mt-4 sm:mt-6 text-base sm:text-lg leading-relaxed text-gray-700">
+          {{ . }}
+        </p>
+      {{ end }}
+    </header>
+    	
+          <!-- Collage rechts (2× 3:2 + 1× Quadrat) -->
+          <div class="flex justify-center lg:justify-end">
+            <div class="flex gap-3 sm:gap-4">
+              <!-- linke Spalte: 2 Querformat-Bilder -->
+              <div class="flex flex-col gap-3 sm:gap-4">
+                {{ $img1 := resources.Get "images/pages/besuchen_Famgo.jpg" }}
+                {{ partial "picture.html" (dict
+                  "img"   $img1
+                  "alt"   "Familiengottesdienst"
+                  "class" "rounded-2xl ring-1 ring-elm-100 shadow-md object-cover aspect-[3/2] w-36 sm:w-40 md:w-44 lg:w-48"
+                  "lazy"  true "webp"  true "lqip"  true) }}
+
+                {{ $img2 := resources.Get "images/pages/besuchen_seegodi.jpg" }}
+                {{ partial "picture.html" (dict
+                  "img"   $img2
+                  "alt"   "Gottesdienst am See"
+                  "class" "rounded-2xl ring-1 ring-elm-100 shadow-md object-cover aspect-[3/2] w-36 sm:w-40 md:w-44 lg:w-48"
+                  "lazy"  true "webp"  true "lqip"  true) }}
+              </div>
+
+              <!-- rechte Spalte: Quadrat -->
+              <div class="flex items-center">
+                {{ $img3 := resources.Get "images/pages/besuchen_cafe.jpg" }}
+                {{ partial "picture.html" (dict
+                  "img"   $img3
+                  "alt"   "Gemeindecafé"
+                  "class" "rounded-2xl ring-1 ring-elm-100 shadow-md object-cover aspect-square w-36 sm:w-40 md:w-44 lg:w-48"
+                  "lazy"  true "webp"  true "lqip"  true) }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    {{ end }}
+  <!-- =========================================================
+       Was passiert im Godi... 
+    ========================================================= -->
+
+    {{ with .Params.besuchen_intro }}
+  <section class="bg-secondary-100 rounded-2xl ring-1 ring-elm-100 shadow-sm relative px-4 py-8 mx-auto max-w-5xl md:px-24 lg:px-8 lg:py-10 ct-container section-gap">    
+
+      <div class="text-center max-w-5xl mb-8 md:mx-auto sm:text-center md:mb-10">
+        <p class="text-sm sm:text-base font-semibold text-elm-500 animate-fade-in">{{ .badge }}</p>
+        <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-tight tracking-tight">{{ .title }}</h2>
+        <h4 class="mt-2 mb-2 font-semibold leading-5 h4 text-gray-900 animate-fade-in leading-tight tracking-tight">{{ .subtitle }}</h4>
+      </div>
+
+      <div class="grid gap-6 sm:gap-8 lg:grid-cols-3">
+        {{ range $.Params.besuchen_kacheln }}
+          <div class="sm:text-center flex flex-col items-center">
+            <div class="flex items-center justify-center w-24 h-24 mb-3 rounded-full bg-indigo-50 ring-1 ring-elm-100 shadow-sm">
+              {{ $item := . }}
+              {{ with resources.Get $item.image }}
+                {{ partial "picture.html" (dict
+                  "img"   .
+                  "alt"   $item.alt
+                  "class" "w-24 h-24 object-contain responsive-img  shadow-lg"
+                  "lazy"  true "webp"  true "lqip"  true) }}
+              {{ end }}
+            </div>
+
+            <h3 class="text-xl sm:text-2xl font-semibold text-elm-700">{{ .title }}</h3>
+            <p class="max-w-lg mb-2 text-base sm:text-lg text-gray-700 text-center">
+              {{- range $i, $b := .bullets -}}
+                {{- if gt $i 0 }}<br>{{ end -}}{{ $b }}
+              {{- end -}}
+            </p>
+
+            {{ with .cta }}
+              {{ if eq .type "youtube" }}
+                <a href="{{ $.Site.Params.Social_media.youtube.Url }}" class="inline-flex items-center font-semibold text-elm-500 hover:text-elm-700">{{ .text }}</a>
+              {{ else if eq .type "relref" }}
+                {{ $target := .target }}
+                {{ $p := site.GetPage $target }}{{ if not $p }}{{ $p = site.GetPage (printf "%s.md" $target) }}{{ end }}{{ if not $p }}{{ $p = site.GetPage (printf "%s/index.md" $target) }}{{ end }}
+                {{ if $p }}
+                  <a href="{{ $p.RelPermalink }}" class="inline-flex items-center font-semibold text-elm-500 hover:text-elm-700">{{ .text }}</a>
+                {{ else if hugo.IsServer }}
+                  <span class="text-red-600 text-sm font-semibold">⚠︎ Zielseite „{{ $target }}“ nicht gefunden</span>
+                {{ end }}
+              {{ end }}
+            {{ end }}
+          </div>
+        {{ end }}
+      </div>
+    </section>
+    {{ end }}
+
+
+  <!-- =========================================================
+       Termine Gottesdienst
+    ========================================================= -->
+<section class="relative px-4 py-12 mx-auto max-w-5xl sm:py-16 px-4 lg:px-8">
+  <div class="max-w-4xl sm:text-center mx-auto">
+    <h2 class="text-center  mt-4 mb-6 text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-tight tracking-tight">
+      Termine Gottesdienst
+    </h2>
+  </div>
+
+  {{/* === Termine am aktuellen Build-Datum filtern (heute inkl.) + Roll-Over NUR bei Jahreswechsel === */}}
+  {{ $now := now }}
+  {{ $cutoffDate := time (time.Format "2006-01-02" $now) }}  {{/* nur Datum, 00:00 */}}
+  {{ $curYear  := $now.Year }}
+  {{ $curMonth := $now.Month }}
+  {{ $curDay   := $now.Day }}
+
+  {{/* Roll-Over nur erlauben, wenn wir sehr spät im Jahr sind (Nov/Dez) und der Termin in Jan/Feb liegt */}}
+  {{ $allowRollover := or (eq $curMonth 11) (eq $curMonth 12) }}
+
+  {{ $termine := slice }}
+  {{ range .Params.termine }}
+    {{/* .date ist "dd.mm." → dd und mm als Strings */}}
+    {{ $dd := substr .date 0 2 }}
+    {{ $mm := substr .date 3 2 }}
+
+    {{/* Startjahr: aktuelles Jahr */}}
+    {{ $year := $curYear }}
+
+    {{/* Datum dieses Jahres bauen */}}
+    {{ $isoThis := printf "%04d-%s-%s" $year $mm $dd }}
+    {{ $tThis := time $isoThis }}
+
+    {{/* Falls heute nach diesem Termin liegt, ist er vergangen. 
+          Optionales Roll-Over NUR, wenn wir Nov/Dez haben UND Termin Jan/Feb ist. */}}
+    {{ if lt $tThis $cutoffDate }}
+      {{ if and $allowRollover (or (eq $mm "01") (eq $mm "02")) }}
+        {{ $year = add $curYear 1 }}
+      {{ else }}
+        {{/* kein Roll-Over → vergangener Termin wird übersprungen */}}
+        {{ continue }}
+      {{ end }}
+    {{ end }}
+
+    {{/* finales ISO-Datum und Vergleich */}}
+    {{ $iso := printf "%04d-%s-%s" $year $mm $dd }}
+    {{ $t := time $iso }}
+
+    {{ if ge $t $cutoffDate }}
+      {{ $termine = $termine | append (merge . (dict "__date" $t "__iso" $iso "__year" $year)) }}
+    {{ end }}
+  {{ end }}
+
+  <!-- Monatsnamen vorbereiten -->
+  {{ $firstMonth := "" }}
+  {{ $monthNames := dict "01" "Januar" "02" "Februar" "03" "März" "04" "April" "05" "Mai" "06" "Juni" "07" "Juli" "08" "August" "09" "September" "10" "Oktober" "11" "November" "12" "Dezember" }}
+  {{ range $termine }}
+    {{ $m := substr .date 3 2 }}
+    {{ if eq $firstMonth "" }}{{ $firstMonth = index $monthNames $m }}{{ end }}
+  {{ end }}
+
+  <!-- MOBILE: Karten-Ansicht (md:hidden) -->
+  <div class="md:hidden space-y-3">
+    {{ $currentMobileMonth := "" }}
+    {{ range $termine }}
+      {{ $month := substr .date 3 2 }}
+      {{ $monthName := index $monthNames $month }}
+
+      {{ if ne $month $currentMobileMonth }}
+        <div class="bg-elm-200/90 text-gray-800 text-center uppercase font-bold tracking-wide px-3 py-2 rounded">
+          {{ $monthName }}
+        </div>
+      {{ end }}
+
+      <article class="rounded-xl bg-white p-3 shadow-sm ring-1 ring-elm-100">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="text-sm text-elm-600 font-semibold">{{ .date }}</div>
+            <div class="text-base font-medium text-gray-900 mt-0.5">{{ .prediger }}</div>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            {{ if .icon1 }}<span class="{{ .icon1 }} text-[20px] text-elm-600" aria-hidden="true"></span>{{ end }}
+            {{ if .icon2 }}<span class="{{ .icon2 }} text-[20px] text-elm-600" aria-hidden="true"></span>{{ end }}
+          </div>
+        </div>
+        {{ if .thema }}
+          <p class="text-gray-700 text-[15px] leading-6 mt-2">{{ .thema }}</p>
+        {{ end }}
+      </article>
+
+      {{ $currentMobileMonth = $month }}
+    {{ end }}
+  </div>
+
+  <!-- DESKTOP/TABLET: Tabelle (ab md) -->
+  <div class="hidden md:block mt-4 sm:mt-6">
+    <div class="relative overflow-hidden rounded-xl shadow-sm ring-1 ring-elm-200/60 bg-white">
+      <div class="overflow-x-auto overflow-y-auto max-h-96">
+        <table class="w-full table-auto text-gray-900 text-sm sm:text-base">
+          <colgroup>
+            <col class="w-28 sm:w-28 md:w-28">
+            <col>
+            <col class="w-[56%] md:w-[60%]">
+            <col class="w-10">
+            <col class="w-10">
+          </colgroup>
+
+          <thead class="bg-elm-200/90 uppercase text-elm-900 sticky top-0 z-10">
+            <tr>
+              <th class="text-center font-bold px-3 py-3 text-[13px] sm:text-[15px] tracking-wide">{{ $firstMonth }}</th>
+              <th class="text-center font-bold px-3 py-3 text-[13px] sm:text-[15px] tracking-wide">Prediger</th>
+              <th class="text-center font-bold px-3 py-3 text-[13px] sm:text-[15px] tracking-wide">Thema, Besonderheiten</th>
+              <th class="px-2 py-3"></th>
+              <th class="px-2 py-3"></th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-elm-100">
+            {{ $currentMonth := "" }}
+            {{ $firstDisplayed := false }}
+            {{ $row := 0 }}
+            {{ range $termine }}
+              {{ $month := substr .date 3 2 }}
+              {{ $monthName := index $monthNames $month }}
+
+              {{ if and (ne $month $currentMonth) (or $firstDisplayed (ne $monthName $firstMonth)) }}
+                <tr>
+                  <td colspan="5" class="bg-elm-200/90 text-gray-800 text-center uppercase font-bold tracking-wide px-4 py-3">
+                    {{ $monthName }}
+                  </td>
+                </tr>
+              {{ end }}
+
+              {{ $isEven := eq (mod $row 2) 0 }}
+              <tr class="{{ if $isEven }}bg-elm-50 hover:bg-elm-100{{ else }}bg-elm-100 hover:bg-elm-100{{ end }} transition-colors">
+                <td class="px-3 py-3 text-center border-r border-elm-100">
+                  <span class="inline-block whitespace-nowrap">{{ .date }}</span>
+                </td>
+                <td class="px-3 py-3 text-center border-r border-elm-100">
+                  <span class="inline-block whitespace-nowrap">{{ .prediger }}</span>
+                </td>
+                <td class="px-3 py-3 border-r border-elm-100">
+                  <span class="block text-center text-[15px] sm:text-[17px] leading-6">{{ .thema }}</span>
+                </td>
+                <td class="px-2 py-3 text-center border-r border-elm-100">
+                  {{ if .icon1 }}<span class="{{ .icon1 }} text-[22px] text-elm-600" aria-hidden="true"></span>{{ end }}
+                </td>
+                <td class="px-2 py-3 text-center">
+                  {{ if .icon2 }}<span class="{{ .icon2 }} text-[22px] text-elm-600" aria-hidden="true"></span>{{ end }}
+                </td>
+              </tr>
+
+              {{ $currentMonth = $month }}
+              {{ $firstDisplayed = true }}
+              {{ $row = add $row 1 }}
+            {{ end }}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+  <!-- =========================================================
+      Fussnote Gottesdienst 
+    ========================================================= -->
+    <section class="relative px-4 pb-16 mx-auto max-w-5xl sm:pb-16 px-4 lg:px-8">
+    <div class="max-w-4xl sm:text-center mx-auto relative overflow-hidden shadow-sm rounded-2xl ring-1 ring-elm-100 bg-white">
+ 
+        <div class="overflow-auto max-h-96">
+          <table class="table-auto w-full text-left">
+            <thead class="bg-elm-200/80 text-gray-800">
+              <tr>
+                <td class="py-2 sm:py-3 text-center font-bold px-3 sm:px-4">
+                  Parallel zum Gottesdienst bieten wir an den gekennzeichneten Sonntagen Kindergottesdienst an. Eltern mit kleinen Kindern können am Gottesdienst im Eltern-Kind-Raum hinter der Glasscheibe teilnehmen.
+                </td>
+                <td class="py-2 sm:py-3 text-center font-bold px-3 sm:px-4">
+                  <span class="icon-[material-symbols--family-star-outline]" style="font-size: 20px;"></span>
+                </td>
+              </tr>
+              <tr>
+               <td class="py-2 sm:py-3 text-center font-bold px-3 sm:px-4">
+                  Der Gottesdienst findet mit Abendmahl statt
+                </td>
+                <td class="py-2 sm:py-3 text-center font-bold px-3 sm:px-4">
+                  <span class="icon-[material-symbols--trophy-outline]" style="font-size: 20px;"></span>
+                </td>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  <!-- =========================================================
+      weitere Termine 
+    ========================================================= -->
+<section class="relative px-4 py-12 mx-auto max-w-5xl sm:py-16 px-4 lg:px-8">
+  <div class="max-w-4xl sm:text-center mx-auto">
+    <h2 class="text-center  mt-4 mb-6 text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-tight tracking-tight">
+      Weitere Termine
+    </h2>
+  </div>
+
+  {{/* === Jetzt/Zuschnitt auf Tagesbeginn === */}}
+  {{ $now := now }}
+  {{ $cutoffDate := time (time.Format "2006-01-02" $now) }}
+  {{ $curYear  := $now.Year }}
+  {{ $curMonth := $now.Month }}
+  {{ $allowRollover := or (eq $curMonth 11) (eq $curMonth 12) }}
+
+  {{/* === Events aus .Params.gemeindetermine.monate flatten & nach Datum filtern === */}}
+  {{ $weitere := slice }}
+  {{ range .Params.gemeindetermine.monate }}
+    {{ range .events }}
+      {{/* Erwartet .date = "dd.mm." */}}
+      {{ $dd := substr .date 0 2 }}
+      {{ $mm := substr .date 3 2 }}
+      {{ $year := $curYear }}
+      {{ $isoThis := printf "%04d-%s-%s" $year $mm $dd }}
+      {{ $tThis := time $isoThis }}
+
+      {{/* Vergangene Events überspringen – außer Roll-Over Nov/Dez → Jan/Feb */}}
+      {{ if lt $tThis $cutoffDate }}
+        {{ if and $allowRollover (or (eq $mm "01") (eq $mm "02")) }}
+          {{ $year = add $curYear 1 }}
+        {{ else }}
+          {{ continue }}
+        {{ end }}
+      {{ end }}
+
+      {{ $iso := printf "%04d-%s-%s" $year $mm $dd }}
+      {{ $t := time $iso }}
+      {{ if ge $t $cutoffDate }}
+        {{/* Ursprungsfelder mit Metadaten mergen */}}
+        {{ $weitere = $weitere | append (merge . (dict "__date" $t "__iso" $iso "__year" $year)) }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+  {{/* === Sortieren nach Datum aufsteigend === */}}
+  {{ $weitere = sort $weitere "__date" "asc" }}
+
+  {{/* Monatsnamen (wie oben bei Gottesdienst) */}}
+  {{ $monthNames := dict "01" "Januar" "02" "Februar" "03" "März" "04" "April" "05" "Mai" "06" "Juni" "07" "Juli" "08" "August" "09" "September" "10" "Oktober" "11" "November" "12" "Dezember" }}
+  {{ $firstMonth := "" }}
+  {{ range $weitere }}
+    {{ $m := substr .date 3 2 }}
+    {{ if eq $firstMonth "" }}{{ $firstMonth = index $monthNames $m }}{{ end }}
+  {{ end }}
+
+  {{ if not (gt (len $weitere) 0) }}
+    <p class="text-center text-gray-600">Derzeit sind keine weiteren Termine geplant.</p>
+  {{ else }}
+
+  <!-- MOBILE: Karten -->
+  <div class="md:hidden space-y-3">
+    {{ $currentMobileMonth := "" }}
+    {{ range $weitere }}
+      {{ $mm := substr .date 3 2 }}
+      {{ $monthName := index $monthNames $mm }}
+
+      {{ if ne $mm $currentMobileMonth }}
+        <div class="bg-elm-200/90 text-gray-800 text-center uppercase font-bold tracking-wide px-3 py-2 rounded">
+          {{ $monthName }}
+        </div>
+      {{ end }}
+
+      <article class="rounded-xl bg-white p-3 shadow-sm ring-1 ring-elm-100">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="text-sm text-elm-600 font-semibold">{{ .date }}</div>
+            <div class="text-base font-medium text-gray-900 mt-0.5">{{ .event }}</div>
+          </div>
+          {{ with .time }}
+            <div class="text-sm text-gray-700 shrink-0">{{ . }}</div>
+          {{ end }}
+        </div>
+      </article>
+
+      {{ $currentMobileMonth = $mm }}
+    {{ end }}
+  </div>
+
+  <!-- DESKTOP/TABLET: Tabelle -->
+  <div class="hidden md:block mt-4 sm:mt-6">
+    <div class="relative overflow-hidden rounded-xl ring-1 ring-elm-200/60 bg-white shadow-sm">
+      <div class="overflow-x-auto overflow-y-auto max-h-64">
+        <table class="w-full table-auto text-gray-900 text-sm sm:text-base">
+          <colgroup>
+            <col class="w-28 sm:w-24 md:w-28">
+            <col>
+            <col class="w-24 sm:w-24 md:w-28">
+          </colgroup>
+          <thead class="bg-elm-200/90 uppercase text-elm-900 sticky top-0 z-10">
+            <tr>
+              <th class="text-center font-bold px-3 py-3 text-[13px] sm:text-[15px] tracking-wide">{{ $firstMonth }}</th>
+              <th class="text-center font-bold px-3 py-3 text-[13px] sm:text-[15px] tracking-wide">Veranstaltung</th>
+              <th class="text-center font-bold px-3 py-3 text-[13px] sm:text-[15px] tracking-wide">Zeit</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-elm-100">
+            {{ $currentMonth := "" }}
+            {{ $row := 0 }}
+            {{ range $weitere }}
+              {{ $mm := substr .date 3 2 }}
+              {{ $monthName := index $monthNames $mm }}
+
+              {{ if and (ne $mm $currentMonth) (ne $currentMonth "") }}
+                <tr>
+                  <td colspan="3" class="bg-elm-200/90 text-gray-800 text-center uppercase font-bold tracking-wide px-4 py-3">
+                    {{ $monthName }}
+                  </td>
+                </tr>
+              {{ end }}
+
+              {{ $isEven := eq (mod $row 2) 0 }}
+              <tr class="{{ if $isEven }}bg-elm-50 hover:bg-elm-100{{ else }}bg-elm-100 hover:bg-elm-100{{ end }} transition-colors">
+                <td class="px-2 py-3 md:py-4 text-center border-r border-elm-100">
+                  <span class="block text-center text-[16px] md:text-[17px] leading-6">
+                    {{ .date }}
+                  </span>
+                </td>
+                <td class="px-4 md:px-6 py-3 md:py-4 border-r border-elm-100">
+                  <span class="block text-center text-[16px] md:text-[17px] leading-6">
+                    {{ .event }}
+                  </span>
+                </td>
+                <td class="px-2 py-3 md:py-4 text-center">
+                  <span class="inline-block whitespace-nowrap">
+                    {{ .time }}
+                  </span>
+                </td>
+              </tr>
+
+              {{ $currentMonth = $mm }}
+              {{ $row = add $row 1 }}
+            {{ end }}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  {{ end }}
+
+
+</section>
+
+  <!-- =========================================================
+      Karte/Wegbeschreibung
+    ========================================================= -->
+<section class="relative px-4 py-12 mx-auto max-w-5xl sm:py-16 px-4 lg:px-8">
+  <div class="max-w-4xl sm:text-center mx-auto">
+   <h2 class="text-center text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-tight tracking-tight">Zum Christustreff Mering</h2>
+
+      </div>
+  <div class="flex flex-col lg:flex-row gap-6 max-w-screen-lg overflow-hidden rounded-xl shadow-sm ring-1 ring-elm-200/60 mx-auto mt-4 sm:mt-6">
+       
+
+ <!-- Left: Karte -->
+        <div class="relative px-5 py-6  lg:w-1/2">
+          {{ partial "leaflet.html" (dict
+            "lat" "48.256477"
+            "lng" "10.985915"
+            "zoom" "16"
+            "text" "Christustreff Mering – Wallbergstraße 10–12"
+            "height" "24rem"
+            "class" "w-full rounded-md ring-1 ring-elm-200/60 shadow-sm"
+            "consent" true
+            "remember" true
+          ) }}
+
+          <noscript>
+            {{ with resources.Get "images/pages/besuchen_karte.png" }}
+              {{ partial "picture.html" (dict
+                "img"   .
+                "alt"   "Anfahrt zum Christustreff Mering (statisches Bild)"
+                "class" "w-full h-auto rounded-md mt-3 ring-1 ring-elm-100 shadow-sm"
+                "lazy"  true "webp"  true "lqip"  true) }}
+            {{ end }}
+          </noscript>
+        </div>
+
+        <!-- Right -->
+        <div class="flex flex-col px-2 sm:px-4 sm:py-6 bg-white lg:w-1/2 gap-2">
+          <!-- Adresse -->
+          <div class="rounded-lg pb-4 px-4 ring-1 ring-elm-100 bg-white">
+             <h4 class="mb-2 font-semibold leading-5 h4 text-gray-900">Adresse</h4>
+            <p class="text-base text-gray-700 font-semibold">
+              Christustreff Mering<br>
+              Wallbergstraße 10–12<br>
+              86415 Mering
+              <a href="https://maps.app.goo.gl/ggq95Z2ZHrEisr2ZA"
+                 class="block mt-1 text-base font-normal text-elm-500 hover:text-primary-600 hover:underline">
+                Der CT bei Google Maps
+              </a>
+            </p>
+          </div>
+
+          <!-- Wegbeschreibungen -->
+          <div class="rounded-lg p-4 ring-1 ring-elm-100 bg-white">
+            <h4 class="mb-2 font-semibold leading-5 h4 text-gray-900">Wegbeschreibung aus Mering:</h4>
+            <p class="text-base text-gray-700">
+              Wenn du dich im Ort Mering befindest, orientiere dich Richtung Westen zur Wallbergstraße. Vom Marktplatz aus gehst oder fährst du über die Augsburger Straße stadtauswärts. Nach etwa 700&nbsp;Metern biegst du rechts in die Wallbergstraße ein. Die Räume des Christustreffs findest du auf der linken Seite, in der Wallbergstraße&nbsp;10–12. Kostenlose Parkplätze stehen in der Nähe zur Verfügung.
+            </p>
+          </div>
+
+          <div class="rounded-lg p-4 ring-1 ring-elm-100 bg-white">
+            <h4 class="mb-2 font-semibold leading-5 h4 text-gray-900">Wegbeschreibung von der B2:</h4>
+            <p class="text-base text-gray-700">
+              Kommst du über die Bundesstraße B2 nach Mering, nimm die Ausfahrt Richtung Mering-Süd. Fahr über die Bahngleise und durch die Unterführung der B2 und folge der Münchner Straße. Bei der Alpspitzstraße bieg rechts ab und nach wenigen Metern in die Wallbergstraße&nbsp;10–12. Parkmöglichkeiten sind vorhanden.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+{{ end }}
+

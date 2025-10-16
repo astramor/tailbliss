@@ -1,0 +1,87 @@
+termine:
+#November
+  - date: "02.02."
+    prediger: "Martin Hoffmann"
+    thema: "noch offen - danach Brunch"
+    icon1: "" # Wenn die Zeile gefüllt ist, wird der Stern für den Kigo angezeigt
+    icon2: "" #Wenn die Zeile gefüllt ist, wird der Kelch für das Abendmahl angezeigt
+#neuer Gottesdiensttermin
+  - date: "09.02."
+    prediger: "Friedrich Meyer"
+    thema: "Das größte Geschenk – ein großes Wunder"
+    icon1: "icon-[material-symbols--family-star-outline]"
+    icon2: ""
+#neuer Gottesdiensttermin    
+  - date: "16.02."
+    prediger: "Markus Krause"
+    thema: "Petrus – Vertrauen in Jesu Worte Mt 14,22-33"
+    icon1: "icon-[material-symbols--family-star-outline]"
+    icon2: "icon-[material-symbols--trophy-outline]"
+#neuer Gottesdiensttermin    
+  - date: "23.02."
+    prediger: "Team"
+    thema: "Feierwerk - Der Knallerevent für die ganze Familie" 
+    icon1: "icon-[material-symbols--family-star-outline]"
+    icon2: ""    
+#März   
+  - date: "02.03."
+    prediger: "Markus Krause"
+    thema: "Der Hauptmann – Vertrauen auf Jesu Autorität Mt 8,5-13 "
+    icon1: ""
+    icon2: ""
+#neuer Gottesdiensttermin
+  - date: "09.03."
+    prediger: "Friedrich Meyer"
+    thema: "noch offen"
+    icon1: ""
+    icon2: ""
+#neuer Gottesdiensttermin      
+  - date: "16.03."
+    prediger: "Markus Krause"
+    thema: "Zachäus – Vertrauen auf Jesu Annahme Lk 19,1-10 "
+    icon1: "icon-[material-symbols--family-star-outline]"
+    icon2: "icon-[material-symbols--trophy-outline]"
+#neuer Gottesdiensttermin    
+  - date: "23.03."
+    prediger: "Marita Müller "
+    thema: "noch offen"
+    icon1: "icon-[material-symbols--family-star-outline]"
+    icon2: ""
+#neuer Gottesdiensttermin    
+  - date: "30.03."
+    prediger: "Damaris Luther"
+    thema: "Familiegottesdienst"
+    icon1: "icon-[material-symbols--family-star-outline]"
+    icon2: ""
+#Apri    
+#neuer Gottesdiensttermin    
+  - date: "06.04."
+    prediger: "Markus Krause"
+    thema: "Paulus und Silas – Vertrauen inmitten von Leiden Apg 16,22-34"
+    icon1: "icon-[material-symbols--family-star-outline]"
+    icon2: ""
+#neuer Gottesdiensttermin    
+  - date: "13.04."
+    prediger: "Markus Krause"
+    thema: "Thomas – Vertrauen trotz Zweifel Joh 20, 24-29 "
+    icon1: ""
+    icon2: ""
+#neuer Gottesdiensttermin         
+  - date: "18.04."
+    prediger: "Markus Krause"
+    thema: " 15:00 Uhr Karfreitag - Es ist vollbracht Joh 19,16–30 "
+    icon1: ""
+    icon2: "icon-[material-symbols--trophy-outline]"
+#neuer Gottesdiensttermin         
+  - date: "20.04."
+    prediger: "Markus Krause"
+    thema: "Osterfrühstück - War es der Gärtner? Joh 20,11–18" 
+    icon1: ""
+    icon2: ""
+#neuer Gottesdiensttermin         
+  - date: "27.04."
+    prediger: "Markus Krause"
+    thema: "Lieben ohne zu sehen 1.Petrus 1,3-9"
+    icon1: "icon-[material-symbols--family-star-outline]"
+    icon2: ""                            
+# Januar

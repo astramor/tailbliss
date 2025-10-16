@@ -1,0 +1,100 @@
+{{/* layouts/partials/mitmachen/seelsorge-profile.html */}}
+<article class="max-w-4xl mx-auto py-12">
+  <!-- Profil-Card -->
+  <section class="pb-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+
+      <!-- EINZIGE Kartenhülle -->
+      <div class="bg-elm-100 rounded-2xl shadow-sm ring-1 ring-elm-200/60">
+  <div class="pt-4 flex justify-center">
+{{ with resources.Get .Params.avatar }}
+  {{ $avatar := .Fill "400x400 webp q85" }}
+               {{ partial "picture.html" (dict
+                        "img"   .
+                        "alt"   (printf "Profilbild %s" $.Params.name)
+                        "class" "w-20 h-auto sm:w-32 md:w-40 object-cover ring-4 ring-elm-200/60"
+                        "lazy"  true
+                        "webp"  true
+                        "lqip"  true
+                      ) }}
+ 
+
+    </div>
+{{ end }}
+
+
+<!-- Textbereich unter dem Bild -->
+<div class="py-4 sm:py-6 px-6 mt-0 text-gray-700">
+  <!-- Name -->
+  <h2 class="mt-0 text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 text-center">
+    {{ .Params.name }}
+  </h2>
+
+
+          <!-- Bio -->
+          {{ with .Params.bio }}
+            <h4 class="font-semibold leading-6 text-gray-900 text-base sm:text-lg md:text-xl">Über mich:</h4>
+            <div class="prose text-justify">
+              {{ . | markdownify }}
+            </div>
+          {{ end }}
+
+          <!-- Erfahrungen -->
+          {{ with .Params.erfahrungen }}
+            <h4 class="font-semibold leading-6 text-gray-900 text-base sm:text-lg md:text-xl">Meine Erfahrungen:</h4>
+            <div class="prose text-justify">
+              {{ . | markdownify }}
+            </div>
+          {{ end }}
+
+          <!-- Motivation -->
+          {{ with .Params.motivation }}
+            <h4 class="font-semibold leading-6 text-gray-900 text-base sm:text-lg md:text-xl">Meine Motivation:</h4>
+            <div class="prose text-justify">
+              {{ . | markdownify }}
+            </div>
+          {{ end }}
+
+          <!-- Schwerpunkte -->
+          {{ with .Params.schwerpunkte }}
+            <h4 class="font-semibold leading-6 text-gray-900 text-base sm:text-lg md:text-xl">Meine Schwerpunkte:</h4>
+            <div class="prose text-justify">
+              {{ . | markdownify }}
+            </div>
+          {{ end }}
+
+          <!-- Kontakt -->
+          {{ with .Params.kontakt }}
+            <h4 class="font-semibold leading-6 text-gray-900 text-base sm:text-lg md:text-xl">Kontakt:</h4>
+            <div class="prose text-justify">
+              {{ . | markdownify }}
+            </div>
+          {{ end }}
+
+          <!-- Intro (optional) -->
+          {{ with .Params.intro }}
+            <div class="prose mt-6">
+              {{ . | markdownify }}
+            </div>
+          {{ end }}
+
+          <!-- Weitere Abschnitte -->
+          {{ with .Params.sections }}
+            <div class="mt-6 space-y-4">
+              {{ range . }}
+                <h3 class="text-lg font-semibold">{{ .title }}</h3>
+                <p class="ml-4">{{ .text }}</p>
+              {{ end }}
+            </div>
+          {{ end }}
+
+          <p class="mb-8 sm:mb-12">
+            <a href="{{ "/seelsorge/" | relURL }}" class="text-elm-500 hover:underline">
+              ← Zurück zum Seelsorgeteam
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</article>

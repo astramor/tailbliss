@@ -1,0 +1,30 @@
+{{/* layouts/partials/startseite/buttons.html */}}
+
+{{ with .Params.buttons }}
+  {{ $buttons := . }}
+  {{ if $buttons }}
+    <div class="mx-auto max-w-5xl px-4 py-8 flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-2 justify-center">
+      {{ range $index, $button := $buttons }}
+        {{/* Ziel-URL je nach Typ bestimmen */}}
+        {{ $href := "" }}
+        {{ if eq $button.type "ref" }}
+          {{ $href = ref $.Page $button.url }}
+        {{ else if eq $button.type "relref" }}
+          {{ $href = relref $.Page $button.url }}
+        {{ else if eq $button.type "param" }}
+          {{ $href = index $.Site.Params (delimit (split $button.url ".") " ") }}
+        {{ else }}
+          {{ $href = $button.url }}
+        {{ end }}
+
+        <a
+          href="{{ $href }}"
+          class="inline-flex items-center justify-center rounded-md bg-primary-600 text-elm-100 hover:bg-primary-500 transition-colors px-4 py-2 text-sm sm:text-base font-semibold w-full sm:w-auto"
+          {{ if eq $button.type "static" }}target="_blank" rel="noopener noreferrer"{{ end }}
+        >
+          {{ $button.text }}
+        </a>
+      {{ end }}
+    </div>
+  {{ end }}
+{{ end }}

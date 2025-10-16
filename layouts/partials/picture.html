@@ -1,0 +1,170 @@
+{{/* picture.html
+  Params:
+    - img    : Hugo Resource (erforderlich)
+    - alt    : string (optional)
+    - class  : string (optional)
+    - lazy   : bool (optional)
+    - webp   : bool (optional)
+    - lqip   : bool (optional)
+    - attrs  : map[string]string (optional) zusätzliche HTML-Attribute (data-*, aria-*)
+    - lb         : bool (optional)        → Lightbox aktivieren
+    - lbGroup    : string (optional)      → Gruppierung für Navigation
+    - lbCaption  : string (optional)      → Caption im Lightbox-Modal
+    - lbSrc      : string (optional)      → explizite Fullsize-URL (Fallback: .RelPermalink)
+*/}}
+
+{{ $img        := .img }}
+{{ $alt        := .alt }}
+{{ $class      := .class }}
+{{ $lazy       := .lazy }}
+{{ $webp       := .webp }}
+{{ $lqip       := .lqip }}
+{{ $attrs      := .attrs | default (dict) }}
+{{ $lb         := .lb }}
+{{ $lbGroup    := .lbGroup }}
+{{ $lbCaption  := .lbCaption }}
+{{ $lbSrc      := .lbSrc }}
+
+{{ with $img }}
+  {{ if (eq .MediaType.SubType "svg") }}
+    {{/* ---- SVG-Zweig: Breite/Höhe bestimmen, sonst lazy deaktivieren ---- */}}
+    {{ $width  := "" }}
+    {{ $height := "" }}
+    {{ $svgContent := .Content }}
+
+    {{ range (findRESubmatch `<svg[^>]*width=["']([.0-9]*)["'a-zA-Z]` $svgContent 1) }}
+      {{ $width = index . 1 }}
+    {{ end }}
+    {{ range (findRESubmatch `<svg[^>]*height=["']([.0-9]*)["'a-zA-Z]` $svgContent 1) }}
+      {{ $height = index . 1 }}
+    {{ end }}
+    {{ if (eq "" $width $height) }}
+      {{ range (findRESubmatch `<svg[^>]*viewBox=["']?([.0-9]*) ([.0-9]*) ([.0-9]*) ([.0-9]*)` $svgContent 1) }}
+        {{ $width  = index . 3 }}
+        {{ $height = index . 4 }}
+      {{ end }}
+    {{ end }}
+    {{ if (eq "" $width $height) }}
+      {{ warnf "Can't detect width and height for SVG %s" .RelPermalink }}
+      {{ $lazy = false }}
+    {{ end }}
+
+    <picture {{ with $class }}class="{{ . }}"{{ end }}>
+      <img
+        src="{{ .RelPermalink }}"
+        {{ with $width  }}width="{{ . }}"{{ end }}
+        {{ with $height }}height="{{ . }}"{{ end }}
+        class="{{ $class }}{{ if $lb }} cursor-zoom-in{{ end }}"
+        {{ with $alt }}alt="{{ . }}"{{ end }}
+        {{ if $lazy }}loading="lazy" decoding="async"{{ end }}
+
+        {{/* Lightbox-Attribute (falls lb=true gesetzt) */}}
+        {{ if $lb }}
+          data-lb="img"
+          {{ with $lbGroup  }}data-lb-group="{{ . }}"{{ end }}
+          data-lb-src="{{ or $lbSrc .RelPermalink }}"
+          {{ with $lbCaption }}data-lb-caption="{{ . }}"{{ end }}
+        {{ end }}
+
+        {{ with $attrs }}
+          {{- range $k, $v := . -}}
+            {{ printf " %s=%q" $k $v | safeHTMLAttr }}
+          {{- end -}}
+        {{ end }}
+
+        {{ if and $lb (not (isset $attrs "@click")) }}
+          @click="$store.lb.open($el)"
+          role="button"
+          tabindex="0"
+          @keydown.enter="$store.lb.open($el)"
+          @keydown.space="$store.lb.open($el); $event.preventDefault()"
+        {{ end }}
+      >
+    </picture>
+
+  {{ else }}
+    {{/* ---- Rasterbild-Zweig ---- */}}
+    {{ $s := newScratch }}
+    {{ $s.SetInMap "sizes" "330w" 330 }}
+    {{ $s.SetInMap "sizes" "660w" 660 }}
+    {{ if gt .Width 1024 }}
+      {{ $s.SetInMap "sizes" "1024w" 1024 }}
+    {{ end }}
+    {{ if gt .Width 1320 }}
+      {{ $s.SetInMap "sizes" "2x" 1320 }}
+    {{ end }}
+    {{ if le .Width 1320 }}
+      {{ $s.SetInMap "sizes" (printf "%dw" .Width) .Width }}
+    {{ end }}
+
+    <picture
+      {{ with $class }}class="{{ . }}"{{ end }}
+      {{ if $lqip }}
+        {{ $bg := (.Resize "20x webp q20").Content | base64Encode }}
+        style="background-image:url(data:image/webp;base64,{{ $bg }});background-size:cover"
+      {{ end }}
+    >
+      {{ if (and $webp (ne .MediaType.SubType "webp")) }}
+        <source
+          {{ if lt .Width 660 }}
+            {{ with .Resize (printf "%dx%d webp" .Width .Height) }}
+              src="{{ .RelPermalink }}"
+            {{ end }}
+          {{ else }}
+            srcset="
+              {{- range $key, $size := $s.Get "sizes" -}}
+                {{- ($img.Resize (printf "%dx webp" $size)).RelPermalink }} {{ $key }},
+              {{- end -}}"
+            src="{{ (.Resize "660x webp").RelPermalink }}"
+          {{ end }}
+          type="image/webp"
+        />
+      {{ end }}
+
+      <img
+        width="{{ .Width }}"
+        height="{{ .Height }}"
+        class="{{ $class }}{{ if $lb }} cursor-zoom-in{{ end }}"
+        {{ with $alt }}alt="{{ . }}"{{ end }}
+        {{ if $lazy }}loading="lazy" decoding="async"{{ end }}
+
+        {{ with $attrs }}
+          {{- range $k, $v := . -}}
+            {{ printf " %s=%q" $k $v | safeHTMLAttr }}
+          {{- end -}}
+        {{ end }}
+
+        {{ if lt .Width 660 }}
+          src="{{ .RelPermalink }}"
+        {{ else }}
+          srcset="
+            {{- range $key, $size := $s.Get "sizes" -}}
+              {{- if eq $size $img.Width -}}
+                {{- $img.RelPermalink }} {{ $key }},
+              {{- else -}}
+                {{- ($img.Resize (printf "%dx" $size)).RelPermalink }} {{ $key }},
+              {{- end -}}
+            {{- end -}}"
+          src="{{ (.Resize "660x").RelPermalink }}"
+        {{ end }}
+
+        {{/* Lightbox-Attribute (falls lb=true gesetzt) */}}
+        {{ if $lb }}
+          data-lb="img"
+          {{ with $lbGroup  }}data-lb-group="{{ . }}"{{ end }}
+          data-lb-src="{{ or $lbSrc .RelPermalink }}"
+          {{ with $lbCaption }}data-lb-caption="{{ . }}"{{ end }}
+        {{ end }}
+
+        {{ if and $lb (not (isset $attrs "@click")) }}
+          @click="$store.lb.open($el)"
+          role="button"
+          tabindex="0"
+          @keydown.enter="$store.lb.open($el)"
+          @keydown.space="$store.lb.open($el); $event.preventDefault()"
+        {{ end }}
+      >
+    </picture>
+  {{ end }}
+{{ end }}
+

@@ -1,0 +1,59 @@
+---
+termine:
+  - month: November
+    entries:
+      - date: 03.11.
+        prediger: Friedrich Meyer
+        thema: Zweifeln erlaubt?!
+        icon1: ""
+        icon2: ""
+      - date: 10.11.
+        prediger: Johann Siemens
+        thema: Fürchte dich nicht
+        icon1: icon-[material-symbols--family-star-outline]
+        icon2: ""
+      - date: 17.11.
+        prediger: Markus Krause
+        thema: Brückenbauen statt Mauern Röm 14,7-13
+        icon1: icon-[material-symbols--family-star-outline]
+        icon2: icon-[material-symbols--trophy-outline]
+      - date: 24.11.
+        prediger: Markus Krause
+        thema: Mit Tränen säen, mit Freuden ernten Psalm 126
+        icon1: ""
+        icon2: ""
+  - month: Dezember
+    entries:
+      - date: 01.12.
+        prediger: Jochen Högendörfer
+        thema: Jubiläum - Kann man Liebe lernen Röm 13
+        icon1: ""
+        icon2: icon-[material-symbols--trophy-outline]
+      - date: 08.12.
+        prediger: Markus Krause
+        thema: Der verheißene König Jesaja 11,1-10
+        icon1: ""
+        icon2: ""
+      - date: 24.12.
+        prediger: Markus Krause
+        thema: Theater - Die Geburt des Königs Lk 2,1-20
+        icon1: ""
+        icon2: ""
+  - month: Januar
+    entries:
+      - date: 05.01.
+        prediger: Friedrich Meyer
+        thema: Jahreslosung
+        icon1: ""
+        icon2: ""
+      - date: 19.01.
+        prediger: Markus Krause
+        thema: Wasser, Wein und Wunder Joh 2,1-12
+        icon1: ""
+        icon2: icon-[material-symbols--trophy-outline]
+      - date: 26.01.
+        prediger: Damaris Luther
+        thema: Familiengottesdienst
+        icon1: icon-[material-symbols--family-star-outline]
+        icon2: ""
+

@@ -1,4 +1,4 @@
-name = "TailBliss"
+name = "Christustreff Mering"
 license = "Apache-2.0"
 licenselink = "https://github.com/nusserstudios/tailbliss/blob/main/LICENSE"
 description = "TailBliss is an Hugo Starter with Tailwind CSS 3.2 and Alpine.js with light and dark modes. Submitted for Hacktoberfest 2022."
@@ -16,8 +16,8 @@ min_version = "0.104.0"
 
 # If the theme has a single author
 [author]
-    name = "Jeremy Nusser"
-    homepage = "https://nusserstudios.com"
+    name = "Markus Krause"
+    homepage = "https://test.krause.si"
 
 # If porting an existing theme
 [original]

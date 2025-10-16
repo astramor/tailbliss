@@ -1,0 +1,594 @@
+{{ define "main" }}
+
+<article>
+
+  <!-- =========================================================
+       HERO / JUMBOTRON
+       ========================================================= -->
+  <div class="w-full mb-4 bg-primary-600">
+    {{ with .Params.featured_image }}
+      {{ with resources.Get . }}
+        {{ $w480  := .Fill "854x480 webp q80" }}
+        {{ $w960  := .Fill "1706x960 webp q80" }}
+        {{ $w1600 := .Fill "2844x1600 webp q80" }}
+        {{ $srcset := printf "%s 480w, %s 960w, %s 1600w" $w480.RelPermalink $w960.RelPermalink $w1600.RelPermalink }}
+        <picture>
+          <source type="image/webp" srcset="{{ $srcset }}" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1280px">
+          <img
+            src="{{ $w960.RelPermalink }}"
+            srcset="{{ $srcset }}"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1280px"
+            alt="{{ with $.Params.featured_alt }}{{ . }}{{ else }}{{ $.Title }}{{ end }}"
+            class="sm:h-[13em] lg:h-[14rem] w-full object-cover border-2 border-elm-600"
+            decoding="async" loading="eager"
+            style="background-position:70%;">
+        </picture>
+      {{ end }}
+    {{ else }}
+       <div class="sm:h-[16em] lg:h-[32rem] min-h-[16em] max-h-[32rem] border-[1px] sm:border-2 border-elm-600 bg-primary-600"></div>
+    {{ end }}
+  </div>
+  <!-- =========================================================
+       WILLKOMMEN / INTRO
+       ========================================================= -->
+ <section class="bg-elm-100 py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-4xl mx-auto">
+   <!-- Kopfbereich -->
+    <header class="text-center md:text-left">
+
+        {{ with .Params.subtitle }}
+          <p class="text-sm sm:text-base font-semibold text-elm-500">
+            {{ . }}
+          </p>
+        {{ end }}
+
+         <h1 class="mt-2 text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-gray-900">
+
+          {{ .Title }}
+        </h1>
+    </header>
+       {{ with .Params.intro }}
+        <!-- Einleitender Text; typografisch etwas größer -->
+       <p class="mt-4 sm:mt-6 text-base sm:text-lg leading-relaxed text-gray-700">
+          {{ . | markdownify  }}
+        </p>
+      {{ end }}
+    <section class="bg-elm-100 py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
+
+      <!-- Intro: 2 Spalten (mobil 1) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 items-start gap-8 md:gap-10">
+        <!-- Linke Spalte: Introbild (Lightbox) -->
+        <div>
+          {{ $imgPath := or .Params.thumbnail_image .Params.featured_image }}
+          {{ with resources.Get $imgPath }}
+            {{ $full := .Resize "1920x webp q85" }}
+            <figure class="group relative overflow-hidden rounded-2xl shadow-md ring-1 ring-elm-100">
+              <button type="button"
+                      class="relative block w-full text-left"
+                      aria-label="Bild in großer Ansicht öffnen"
+                      @click="$store.lb.open($el.querySelector('img[data-lb=img]'))">
+                <div class="relative aspect-[4/3] md:aspect-[3/2]">
+                  <div class="absolute inset-0 transition-transform duration-300 group-hover:scale-[1.01]">
+                    {{ partial "picture.html" (dict
+                      "img"   .
+                      "alt"   (printf "%s – Introbild" $.Title)
+                      "class" "h-full w-full object-cover object-center cursor-zoom-in"
+                      "lazy"  true
+                      "webp"  true
+                      "lqip"  true
+                      "attrs" (dict
+                        "data-lb"         "img"
+                        "data-lb-group"   "pfadfinder-intro"
+                        "data-lb-src"     $full.RelPermalink
+                        "data-lb-caption" (printf "%s – Introbild" $.Title)
+                      )
+                    ) }}
+                  </div>
+                </div>
+                <div class="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition group-hover:bg-black/15 group-hover:opacity-100">
+                  <span class="icon-[mdi--magnify-plus-outline] text-white text-2xl drop-shadow"></span>
+                </div>
+              </button>
+            </figure>
+          {{ end }}
+        </div>
+
+<!-- Info-Karten (Pfadfinder)  -->
+{{ with .Params.sections }}
+  {{ $p := $.Page }}
+  <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    {{ range . }}
+      <article class="relative bg-elm-100 rounded-xl shadow-sm ring-1 ring-elm-200/60 p-5">
+        <!-- Header-Zeile: Icon + Überschrift auf einer Linie -->
+        <div class="flex items-center gap-3 sm:gap-4">
+          {{ with .icon }}
+            <span class="inline-flex w-9 h-9 sm:w-10 sm:h-10 items-center justify-center rounded-full bg-elm-100 text-elm-600 shrink-0">
+              <i class="icon-[{{ . }}] text-[22px] sm:text-[24px]"></i>
+            </span>
+          {{ end }}
+          {{ with .title }}
+            <h4 class="font-semibold leading-6 text-gray-900 text-base sm:text-lg md:text-xl min-w-0 break-words">
+              {{ . }}
+            </h4>
+          {{ end }}
+        </div>
+
+        
+
+        <!-- Body: Text darunter, linksbündig -->
+        {{ with .text }}
+          <div class="prose prose-base max-w-none text-gray-700 mt-3 sm:mt-4 prose-p:my-0 prose-p:leading-7 prose-ul:my-1.5 prose-li:my-0.5 prose-li:marker:text-elm-500 text-left">
+            <p class="mt-2 sm:mt-4 text-base text-gray-700">
+{{ . | markdownify }}</p>
+          </div>
+        {{ end }}
+
+        <!-- Kontakt-Zeilen (geschützt, optional) -->
+        {{ if or .name .phone .email }}
+          <div class="prose prose-base max-w-none text-gray-700 mt-3 sm:mt-4 prose-p:my-0.5 prose-ul:my-1.5 prose-li:my-0.5 prose-li:marker:text-elm-500 text-left">
+            {{ with .name }}
+              <p class="mt-2 sm:mt-4 text-base text-gray-700">
+<strong>{{ . }}</strong></p>
+            {{ end }}
+            {{ with .phone }}
+              <p class="mt-2 sm:mt-4 text-base text-gray-700">
+
+                {{ $p.RenderString (printf `{{< protect type="phone" phone="%s" >}}` .) }}
+              </p>
+            {{ end }}
+            {{ with .email }}
+             <p class="mt-2 sm:mt-4 text-gray-700">
+
+                {{ $p.RenderString (printf `{{< protect type="email" email="%s" >}}` .) }}
+              </p>
+            {{ end }}
+          </div>
+        {{ end }}
+      </article>
+    {{ end }}
+  </div>
+{{ end }}
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       GALLERY / CAROUSEL (behält deinen bestehenden Code)
+       ========================================================= -->
+{{ with .Params.gallery }}
+<section class="mt-10 sm:mt-12 mb-12 sm:mb-16 ct-container section-gap"
+         x-data="{
+           stepPx: 0,
+           init(){ this.$nextTick(() => this.measure()); new ResizeObserver(() => this.measure()).observe($refs.track) },
+           measure(){
+             const t = this.$refs.track;
+             const card = t.querySelector('[data-card]');
+             if(!card) return;
+             const cs = getComputedStyle(t);
+             const gap = parseFloat(cs.columnGap || cs.gap) || 16;
+             this.stepPx = card.clientWidth + gap; // genau 1 Karte weit
+           },
+           prev(){ this.$refs.track.scrollBy({ left: -this.stepPx, behavior: 'smooth' }) },
+           next(){ this.$refs.track.scrollBy({ left:  this.stepPx, behavior: 'smooth' }) }
+         }">
+  <div class="relative">
+
+    <!-- Track: durchgehend Flex-Karussell (kein Grid mehr) -->
+    <div x-ref="track"
+         class="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory
+                [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+
+      {{ $idx := 0 }}
+      {{ range . }}
+        {{ with resources.Get . }}
+          {{ $full := . }}
+          <figure data-card
+                  class="shrink-0 snap-start rounded-2xl overflow-hidden shadow-md
+                         basis-full md:basis-1/2 lg:basis-1/3">
+            <div class="relative aspect-[4/3] md:aspect-[3/2]">
+              <div class="absolute inset-0">
+                {{ partial "picture.html" (dict
+                  "img"       .
+                  "alt"       (printf "Kigo Galerie – %s" (path.Base .RelPermalink))
+                  "class"     "h-full w-full object-cover object-center"
+                  "lazy"      true
+                  "webp"      true
+                  "lqip"      true
+                  "lb"        true
+                  "lbGroup"   "kigo-gallery"
+                  "lbCaption" (printf "Kigo Galerie – %s" (path.Base .RelPermalink))
+                  "lbSrc"     $full.RelPermalink
+                ) }}
+              </div>
+            </div>
+          </figure>
+          {{ $idx = add $idx 1 }}
+        {{ end }}
+      {{ end }}
+    </div>
+
+    <!-- Controls: auf allen Breakpoints sichtbar -->
+    <button type="button"
+            class="absolute left-2 top-1/2 -translate-y-1/2
+                   inline-flex items-center justify-center w-10 h-10 rounded-full
+                   bg-white/90 text-gray-900 shadow hover:bg-white
+                   focus:outline-none focus:ring-2 focus:ring-primary-600"
+            @click="prev()" aria-label="Zurück">
+      <span class="icon-[mdi--chevron-left] text-2xl"></span>
+    </button>
+
+    <button type="button"
+            class="absolute right-2 top-1/2 -translate-y-1/2
+                   inline-flex items-center justify-center w-10 h-10 rounded-full
+                   bg-white/90 text-gray-900 shadow hover:bg-white
+                   focus:outline-none focus:ring-2 focus:ring-primary-600"
+            @click="next()" aria-label="Weiter">
+      <span class="icon-[mdi--chevron-right] text-2xl"></span>
+    </button>
+
+  </div>
+</section>
+{{ end }}
+
+
+
+  <!-- =========================================================
+       DIVIDER
+       ========================================================= -->
+  <section class="relative px-4 py-12 mx-auto max-w-5xl sm:py-16 px-4 lg:px-8">
+  <div class="max-w-4xl sm:text-center mx-auto">
+    <div class="h-[2px] sm:h-[3px] w-full bg-elm-200 rounded-full"></div>
+    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-elm-100 px-3 py-1 rounded-full ring-1 ring-elm-200">
+      <span class="icon-[mdi--campfire] text-primary-700 text-lg"></span>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       TERMINE (links) + ASIDE-BILD (rechts)
+       ========================================================= -->
+<section class="relative px-4 py-12 mx-auto max-w-5xl sm:py-16 px-4 lg:px-8">
+  <div class="max-w-4xl sm:text-center mx-auto ">
+    <h2 class="text-center  mt-4 mb-6 text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-tight tracking-tight">
+   Termine Pfadfinder</h2>
+          </div>
+
+    {{/* === Jetzt (auf Tagesbeginn) + Roll-Over-Regel wie bei Gottesdiensten === */}}
+    {{ $now := now }}
+    {{ $cutoffDate := time (time.Format "2006-01-02" $now) }}
+    {{ $curYear  := $now.Year }}
+    {{ $curMonth := $now.Month }}
+    {{ $allowRollover := or (eq $curMonth 11) (eq $curMonth 12) }}
+
+    {{/* === Pfadfinder-Termine: .Params.pfadfindertermine.monate[].aktion flatten + filtern === */}}
+    {{ $pfad := slice }}
+    {{ with .Params.pfadfindertermine.monate }}
+      {{ range . }}
+        {{ range .aktion }}
+          {{ $dd := substr .datum 0 2 }}
+          {{ $mm := substr .datum 3 2 }}
+          {{ $year := $curYear }}
+
+          {{ $isoThis := printf "%04d-%s-%s" $year $mm $dd }}
+          {{ $tThis := time $isoThis }}
+
+          {{ if lt $tThis $cutoffDate }}
+            {{ if and $allowRollover (or (eq $mm "01") (eq $mm "02")) }}
+              {{ $year = add $curYear 1 }}
+            {{ else }}
+              {{ continue }}
+            {{ end }}
+          {{ end }}
+
+          {{ $iso := printf "%04d-%s-%s" $year $mm $dd }}
+          {{ $t := time $iso }}
+          {{ if ge $t $cutoffDate }}
+            {{ $pfad = $pfad | append (merge . (dict "__date" $t "__iso" $iso "__year" $year)) }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+
+    {{ $pfad = sort $pfad "__date" "asc" }}
+
+    {{ $monthNames := dict "01" "Januar" "02" "Februar" "03" "März" "04" "April" "05" "Mai" "06" "Juni" "07" "Juli" "08" "August" "09" "September" "10" "Oktober" "11" "November" "12" "Dezember" }}
+    {{ $firstMonth := "" }}
+    {{ range $pfad }}
+      {{ $m := substr .datum 3 2 }}
+      {{ if eq $firstMonth "" }}{{ $firstMonth = index $monthNames $m }}{{ end }}
+    {{ end }}
+
+    <div class="grid gap-8 md:gap-10 lg:grid-cols-[1.2fr_0.8fr] items-start">
+
+      <!-- MOBILE: Karten -->
+      <div class="space-y-3 md:hidden">
+        {{ if not (gt (len $pfad) 0) }}
+          <p class="text-center text-gray-600">Aktuell keine anstehenden Termine.</p>
+        {{ else }}
+          {{ $currentMobileMonth := "" }}
+          {{ range $pfad }}
+            {{ $mm := substr .datum 3 2 }}
+            {{ $monthName := index $monthNames $mm }}
+
+            {{ if ne $mm $currentMobileMonth }}
+              <div class="bg-elm-200/90 text-gray-800 text-center uppercase font-bold tracking-wide px-3 py-2 rounded">
+                {{ $monthName }}
+              </div>
+            {{ end }}
+
+            <article class="rounded-xl bg-white ring-1 ring-elm-200/60 shadow-sm px-3 py-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="shrink-0 text-elm-600 font-semibold text-[13px] sm:text-[14px] leading-6 tracking-wide">
+                  {{ .datum }}
+                </span>
+                <span class="shrink-0 h-5 w-px bg-elm-200/80"></span>
+                <p class="m-0 flex-1 min-w-0 text-gray-900 text-[15px] sm:text-[16px] leading-6 whitespace-nowrap overflow-hidden text-ellipsis">
+                  {{ .treffen }}
+                </p>
+                {{ with .gruppen }}
+                  <span class="shrink-0 ml-2 rounded-md bg-elm-50 text-gray-700 px-2 py-1 text-xs leading-none ring-1 ring-elm-200/80">
+                    {{ . }}
+                  </span>
+                {{ end }}
+              </div>
+            </article>
+
+            {{ $currentMobileMonth = $mm }}
+          {{ end }}
+        {{ end }}
+      </div>
+
+      <!-- DESKTOP/TABLET: Tabelle -->
+      <div class="hidden md:block">
+        <div class="relative overflow-hidden rounded-lg ring-1 ring-elm-200/60 bg-white">
+          <div class="overflow-x-auto overflow-y-auto max-h-96">
+            <table class="w-full table-auto text-gray-900 text-sm sm:text-base">
+              <colgroup>
+                <col class="w-28 sm:w-24 md:w-28">
+                <col>
+                <col class="w-24 sm:w-24 md:w-28">
+              </colgroup>
+
+              <thead class="bg-elm-200/90 uppercase text-elm-900 sticky top-0 z-10">
+                <tr>
+                  <th class="text-center font-bold px-3 py-3 text-[13px] sm:text-[15px] tracking-wide">{{ $firstMonth }}</th>
+                  <th class="text-center font-bold px-3 py-3 text-[13px] sm:text-[15px] tracking-wide">Treffen / Aktion</th>
+                  <th class="text-center font-bold px-3 py-3 text-[13px] sm:text-[15px] tracking-wide">Gruppe(n)</th>
+                </tr>
+              </thead>
+
+              <tbody class="divide-y divide-elm-100">
+                {{ if not (gt (len $pfad) 0) }}
+                  <tr><td colspan="3" class="px-4 py-6 text-center text-gray-600">Aktuell keine anstehenden Termine.</td></tr>
+                {{ else }}
+                  {{ $currentMonth := "" }}
+                  {{ $row := 0 }}
+                  {{ range $pfad }}
+                    {{ $mm := substr .datum 3 2 }}
+                    {{ $monthName := index $monthNames $mm }}
+
+                    {{ if and (ne $mm $currentMonth) (ne $currentMonth "") }}
+                      <tr>
+                        <td colspan="3" class="bg-elm-200/90 text-gray-800 text-center uppercase font-bold tracking-wide px-4 py-3">
+                          {{ $monthName }}
+                        </td>
+                      </tr>
+                    {{ end }}
+
+                    {{ $isEven := eq (mod $row 2) 0 }}
+                    <tr class="{{ if $isEven }}bg-elm-50 hover:bg-elm-100{{ else }}bg-elm-100 hover:bg-elm-100{{ end }} transition-colors">
+                      <td class="px-2 py-3 md:py-4 text-center border-r border-elm-100">
+                        <span class="block text-center text-[15px] sm:text-[16px] leading-6">{{ .datum }}</span>
+                      </td>
+                      <td class="px-4 md:px-6 py-3 md:py-4 border-r border-elm-100">
+                        <span class="block text-center text-[15px] sm:text-[16px] leading-6">{{ .treffen }}</span>
+                      </td>
+                      <td class="px-2 py-3 md:py-4 text-center">
+                        <span class="inline-block whitespace-nowrap">{{ .gruppen }}</span>
+                      </td>
+                    </tr>
+
+                    {{ $currentMonth = $mm }}
+                    {{ $row = add $row 1 }}
+                  {{ end }}
+
+                  <!-- Fußnote (optional) -->
+                  <tr>
+                    <td colspan="3" class="bg-elm-100 text-gray-700 text-center px-4 py-3 text-[13px] sm:text-sm">
+                      Abkürzungen: <span class="font-medium">S</span>=Streifenhörnchen,
+                      <span class="font-medium">G</span>=Geparden,
+                      <span class="font-medium">Sch</span>=Schneeeulen,
+                      <span class="font-medium">F</span>=Feuersalamander,
+                      <span class="font-medium">W</span>=Wölflinge
+                    </td>
+                  </tr>
+                {{ end }}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Aside-Bild -->
+      <aside class="w-full max-w-sm mx-auto lg:mx-0">
+        {{ $sideImgPath := or .Params.pfadfindertermine_image "images/pages/mitmachen/pfadfinder/pfadfindertermine.jpg" }}
+        {{ $caption := or .Params.pfadfindertermine_alt (printf "%s – Pfadfindertermine" .Title) }}
+        {{ with resources.Get $sideImgPath }}
+          {{ $full := .Resize "1920x webp q85" }}
+          <figure class="rounded-2xl overflow-hidden shadow-md ring-1 ring-elm-200/60">
+            <button type="button"
+                    class="group relative block w-full text-left"
+                    aria-label="Bild in großer Ansicht öffnen"
+                    @click="$store.lb.open($el.querySelector('img[data-lb=img]'))">
+              <div class="relative aspect-[16/9] max-h-80 md:max-h-96">
+                <div class="absolute inset-0 transition-transform duration-300 group-hover:scale-[1.01]">
+                  {{ partial "picture.html" (dict
+                    "img"   .
+                    "alt"   $caption
+                    "class" "h-full w-full object-cover object-center cursor-zoom-in"
+                    "lazy"  true
+                    "webp"  true
+                    "lqip"  true
+                    "attrs" (dict
+                      "data-lb"         "img"
+                      "data-lb-group"   "pfadfindertermine"
+                      "data-lb-src"     $full.RelPermalink
+                      "data-lb-caption" $caption
+                    )
+                  ) }}
+                </div>
+              </div>
+              <div class="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition group-hover:bg-black/20 group-hover:opacity-100">
+                <span class="icon-[mdi--magnify-plus-outline] text-white text-3xl drop-shadow"></span>
+              </div>
+            </button>
+          </figure>
+        {{ else }}
+          <div class="rounded-2xl overflow-hidden shadow-md ring-1 ring-elm-200/60 bg-elm-200 aspect-[16/9]"></div>
+        {{ end }}
+      </aside>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       PARALLAX FULL-BLEED
+       ========================================================= -->
+  {{ $parallaxPath := or .Params.pfadfinder_parallax_image .Params.thumbnail_image }}
+  {{ with $parallaxPath }}
+    {{ with resources.Get . }}
+      {{ $w2048 := .Resize "2048x1152 webp q85" }}
+      <section class="relative mt-12 ct-container section-gap">
+        <div class="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
+          <div class="w-screen bg-cover bg-center bg-no-repeat overflow-hidden bg-scroll md:bg-fixed
+                      h-[108px] sm:h-[148px] md:h-[188px] lg:h-[228px] xl:h-[280px]"
+               style="background-image: url('{{ $w2048.RelPermalink }}');">
+          </div>
+        </div>
+      </section>
+    {{ end }}
+  {{ end }}
+
+<!-- =========================================================
+     SIPPEN
+     ========================================================= -->
+<section class="bg-secondary-100 rounded-2xl ring-1 ring-elm-100 shadow-sm relative px-4 py-8 mx-auto max-w-5xl md:px-24 lg:px-8 lg:py-10 ct-container section-gap">
+
+  <div class="text-center max-w-5xl mb-8 md:mx-automd:mb-10">
+   <h2 class="mt-4 text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-tight tracking-tight">Sippen</h2>
+    <p class="mt-4 sm:mt-6 text-base sm:text-lg leading-relaxed text-gray-700">
+      Unsere fünf Sippen stellen sich vor – mit Herz, Abenteuer und Teamgeist.
+    </p>
+  </div>
+
+  {{ with .Params.sippen }}
+    <div class="grid gap-y-6 gap-x-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+      {{ range . }}
+  <!-- Mobile: Logo links, Text rechts | Ab sm: Logo oben -->
+  <article class="relative bg-elm-100 rounded-xl shadow-sm ring-1 ring-elm-200/60 shadow overflow-hidden flex flex-row sm:flex-col items-center text-left sm:text-center p-4 sm:p-5">
+    {{ $img := resources.Get .image }}
+
+    <!-- Logo-Container -->
+   <div class="w-20 h-20 sm:w-40 sm:h-40 flex items-center justify-center bg-white rounded-md overflow-hidden">
+
+      {{ if $img }}
+        {{ partial "picture.html" (dict
+          "img"   $img
+          "alt"   .name
+          "class" "w-full h-full object-contain object-center"
+          "lazy"  true
+          "webp"  true
+          "lqip"  false  
+        ) }}
+      {{ else }}
+        <div class="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400 text-xs">
+          Kein Bild
+        </div>
+      {{ end }}
+    </div>
+
+    <!-- Textbereich -->
+    <div class="flex-1 px-4 sm:px-0 sm:mt-4 sm:flex sm:flex-col sm:items-center sm:text-center">
+      <h4 class="font-semibold leading-6 text-gray-900 text-base sm:text-lg md:text-lg min-w-0 break-words">{{ .name }}</h4>
+      {{ with .rolle }}<p class="text-sm sm:text-base text-gray-600 mt-0.5">{{ . }}</p>{{ end }}
+      {{ with .text }}<p class="text-sm sm:text-base text-gray-600 mt-0.5">{{ . }}</p>{{ end }}
+      {{ with .alter }}<p class="text-sm sm:text-base text-gray-600 mt-0.5">{{ . }}</p>{{ end }}
+
+      {{ with .links }}
+        <div class="mt-3 sm:mt-4 flex items-center sm:justify-center gap-3 text-gray-500">
+          {{ range . }}
+            <a href="{{ .url }}" class="inline-flex p-2 rounded-md hover:bg-elm-50" target="_blank" rel="noopener">
+              <span class="icon-[{{ .icon }}] w-5 h-5"></span>
+            </a>
+          {{ end }}
+        </div>
+      {{ end }}
+    </div>
+  </article>
+{{ end }}
+{{ end }}
+</section>
+
+
+  <!-- =========================================================
+       LOGO-CLOUD
+       ========================================================= -->
+<section class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 bg-transparent">
+  <div class="mx-auto max-w-4xl">
+    <div class="text-center">
+      <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-tight tracking-tight">
+          {{ .Params.logos_ueberschrift }}
+        </h2>
+        {{ with .Params.logos_text }}
+          <div  class="my-4 sm:my-6 text-base sm:text-lg leading-relaxed text-gray-700">{{ . | markdownify }}</div>
+        {{ end }}
+      </div>
+
+      {{ with .Params.logos }}
+        <div class="space-y-4 sm:space-y-5">
+          {{ range . }}
+            {{ $img := resources.Get .image }}
+            {{ $name := or .name .alt }}
+            {{ $desc := .desc }}
+            {{ $href := .url }}
+
+            <!-- Karte: Logo links, Text rechts -->
+            <a {{ if $href }}href="{{ $href }}" target="_blank" rel="noopener"{{ end }}
+               class="block rounded-2xl bg-gray-50 ring-1 ring-gray-200 hover:bg-white hover:ring-gray-300 transition shadow-sm">
+              <div class="p-6 sm:p-8 flex flex-col sm:flex-row items-center sm:items-center gap-6">
+                <!-- Logo-Spalte -->
+                <div class="shrink-0 w-36 sm:w-40 md:w-44 flex items-center justify-center">
+                  <div class="bg-white rounded-xl ring-1 ring-gray-200/70 shadow-sm p-2 sm:p-3">
+                    {{ if $img }}
+                      {{ partial "picture.html" (dict
+                        "img"   $img
+                        "alt"   (or $name .alt)
+                        "class" "max-h-16 sm:max-h-20 md:max-h-24 w-auto object-contain block"
+                        "lazy"  true
+                        "webp"  true
+                        "lqip"  true
+                      ) }}
+                    {{ else }}
+                      <img src="{{ .image }}" alt="{{ or $name .alt }}"
+                           class="max-h-16 sm:max-h-20 md:max-h-24 w-auto object-contain block">
+                    {{ end }}
+                  </div>
+                </div>
+
+                <!-- Text-Spalte -->
+                <div class="flex-1 text-center sm:text-left">
+                  {{ if $name }}<h3 class="text-lg sm:text-xl font-semibold text-gray-900 text-center group-hover:text-primary-600 transition-colors">{{ $name }}</h3>{{ end }}
+                  {{ with $desc }}<div  class="mt-1 sm:mt-2 text-base sm:text-lg leading-relaxed text-gray-700">{{ . | markdownify }}</div>{{ end }}
+                </div>
+              </div>
+            </a>
+          {{ end }}
+        </div>
+      {{ end }}
+    </div>
+  </section>
+
+</article>
+
+{{ end }}
+

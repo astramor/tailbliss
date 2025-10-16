@@ -1,0 +1,30 @@
+# data/gemeindetermine.yaml
+
+monate:
+  - name: "Februar"
+    events:
+      - date: "10.02."
+        event: "Hauskreisleitertreffen"
+        time: "20:00 Uhr"
+      - date: "11.02."
+        event: "Gemeindeleitungssitzung"
+        time: "19:30 Uhr"
+      - date: "18.02."
+        event: "Mitgliederversammlung"
+        time: "19:30 Uhr"
+
+  - name: "März"
+    events:
+      - date: "11.03."
+        event: "Mitgliederversammlung"
+        time: "19:30 Uhr"
+
+  - name: "April"
+    events:
+      - date: "08.04."
+        event: "Gemeindeleitungssitzung"
+        time: "19:30 Uhr"
+      - date: "19. - 21.04."
+        event: "Osterkonferenz in Gunzenhausen"
+        time: ""
+

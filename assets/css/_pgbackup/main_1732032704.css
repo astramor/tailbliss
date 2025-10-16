@@ -1,0 +1,74 @@
+/* assets */ 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+font-family: ui-sans-serif,
+system-ui,
+-apple-system,
+BlinkMacSystemFont,
+"Segoe UI",
+Roboto,
+"Helvetica Neue",
+Arial,
+"Noto Sans",
+sans-serif,
+Apple Color Emoji,
+Segoe UI Emoji,
+NotoColorEmoji,
+Segoe UI Symbol,
+Android Emoji,
+EmojiSymbols;
+/* Custom CSS */
+
+.prose :where(h1):not(:where([class~="not-prose"] *)) {
+    color: white !important;
+}
+
+
+ h1, h2, h3, h4, h5, h6  {
+   font-family: "Montserrat", sans;
+ }
+
+@font-face {
+  font-family: "Material Symbols Outlined";
+  font-style: normal;
+  font-weight: 100 700;
+  font-display: block;
+  src: url("./material-symbols-outlined.woff2") format("woff2");
+}
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "liga";
+}
+
+
+
+
+/* Custom CSS end */
+
+  .sm\:text-5xl {
+    font-size: 3rem;
+    line-height: 1;
+  }
+
+
+picture > img {
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+
+@media onl

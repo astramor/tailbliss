@@ -1,0 +1,73 @@
+{{define "main"}}
+  <!-- Jumbotron -->
+<div class="w-full mb-4 bg-primary-600">
+
+{{ if and (isset .Params "featured_image") .Params.featured_image }}
+  {{ with resources.Get .Params.featured_image }}
+    {{ $optimizedFeaturedImage := .Resize "1920x1080 webp q90" }}
+    <div 
+      class="loading:lazy sm:h-[13em] lg:h-[14rem] min-h-[10em] max-h-[16rem] md:max-h-screen items-center justify-center page-header overflow-hidden bg-cover bg-no-repeat border-2 border-elm-600 md:sticky"
+      style="background-position: 70%; background-image: url('{{ $optimizedFeaturedImage.RelPermalink }}');">
+    </div>	
+ 
+  {{ end }}
+  {{ else }}
+  
+    <div 
+      class="loading:lazy sm:h-[13em] lg:h-[14rem] min-h-[10em] max-h-[16rem] md:max-h-screen items-center justify-center page-header overflow-hidden bg-cover bg-no-repeat border-2 border-elm-600 md:sticky"
+      >
+    <span class="py-20">
+                   <h1 class="py-16 text-3xl		 sm:text-4xl md:text-5xl lg:text-5xl font-semibold text-center text-white capitalize">
+                   {{ .Title }}
+                   </h1>
+                </span>
+                 </div>	
+               
+  {{ end }}
+  </div>
+</div>
+
+
+<main >
+  <!-- " {{.Content}}" pulls from the markdown content of the corresponding _index.md -->
+
+<div class="px-4 py-3 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:py-6">
+  <div class="mx-auto sm:text-center lg:max-w-2xl">
+
+    <div class="mb-4 transition-shadow duration-300 hover:shadow-xl lg:mb-6">
+
+    {{ with .Params.thumbnail_image }}
+    {{ with resources.Get . }}
+        {{ partial "picture.html" (dict "img" . "alt" .Title "class" "object-cover w-full h-56 rounded shadow-lg sm:h-64 md:h-80 lg:h-96" "lazy" true "webp" true "lqip" true) }}
+    {{ end }}
+{{ end }}
+                   
+                 
+    </div>
+    <p class="px-4 py-3 max-w-xl mb-0 text-base text-gray-700 sm:mx-auto lg:py-6">
+		{{ .Params.display_related }} 
+		{{ .Params.Beschreibung  | markdownify }}
+		{{ .Content }} 
+		
+    </p>
+       
+		
+		
+		
+    </p>
+
+
+    <a href="/" aria-label="" class="inline-flex items-center font-semibold transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800">
+Zurück
+      <svg class="inline-block w-3 ml-2" fill="currentColor" viewBox="0 0 12 12">
+        <path d="M9.707,5.293l-5-5A1,1,0,0,0,3.293,1.707L7.586,6,3.293,10.293a1,1,0,1,0,1.414,1.414l5-5A1,1,0,0,0,9.707,5.293Z"></path>
+      </svg>
+    </a>
+  </div>
+</div>
+   
+
+</main>
+  {{ end }}
+
+

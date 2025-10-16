@@ -1,0 +1,56 @@
+<script>
+document.addEventListener('alpine:init', () => {
+  Alpine.store('lb', {
+    opened: false,
+    items: [],
+    index: 0,
+    current: { src:'', caption:'', group:null },
+
+    collect(group){
+      const sel = group ? `img[data-lb="img"][data-lb-group="${group}"]`
+                        : `img[data-lb="img"]`;
+      return [...document.querySelectorAll(sel)].map(el => ({
+        el,
+        src: el.getAttribute('data-lb-src') || el.currentSrc || el.src,
+        caption: el.getAttribute('data-lb-caption') || el.alt || '',
+        group: el.getAttribute('data-lb-group') || null
+      }));
+    },
+
+    open(target){
+      const group = target.getAttribute('data-lb-group') || null;
+      this.items  = this.collect(group);
+      this.index  = Math.max(0, this.items.findIndex(i => i.el === target));
+      this.update();
+      this.opened = true;
+      document.documentElement.classList.add('overflow-hidden');
+    },
+
+    close(){
+      this.opened = false;
+      this.items = [];
+      this.index = 0;
+      this.current = { src:'', caption:'', group:null };
+      document.documentElement.classList.remove('overflow-hidden');
+    },
+
+    update(){
+      const it = this.items[this.index];
+      if (!it) return this.close();
+      this.current = { src: it.src, caption: it.caption, group: it.group };
+    },
+
+    prev(){
+      if (this.items.length < 2) return;
+      this.index = (this.index - 1 + this.items.length) % this.items.length;
+      this.update();
+    },
+
+    next(){
+      if (this.items.length < 2) return;
+      this.index = (this.index + 1) % this.items.length;
+      this.update();
+    }
+  });
+});
+</script>

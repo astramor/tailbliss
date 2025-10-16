@@ -1,0 +1,75 @@
+{{/* Leaflet-Partial mit optionalem Consent-Gate */}}
+
+{{/* JS einmal pro Seite einbinden und URL merken */}}
+{{- $jsURL := .Page.Scratch.Get "leaflet_js_url" -}}
+{{- if not $jsURL -}}
+  {{- $jsRes := resources.Get "js/leaflet-map.js" | js.Build (dict "target" "es2017" "format" "esm") | fingerprint -}}
+  <script type="module" src="{{ $jsRes.RelPermalink }}" defer></script>
+  {{- .Page.Scratch.Set "leaflet_js_url" $jsRes.RelPermalink -}}
+  {{- $jsURL = $jsRes.RelPermalink -}}
+{{- end -}}
+
+{{/* Parameter */}}
+{{- $lat      := .lat      | default "48.2704" -}}
+{{- $lng      := .lng      | default "10.9833" -}}
+{{- $zoom     := .zoom     | default "14" -}}
+{{- $text     := .text     | default "Hier sind wir!" -}}
+{{- $tile     := .tileUrl  | default "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" -}}
+{{- $height   := .height   | default "24rem" -}}
+{{- $class    := .class    | default "w-full rounded-md border border-elm-200 shadow-sm" -}}
+{{- $consent  := .consent  | default false -}}
+{{- $remember := .remember | default true -}}
+{{- $id := printf "map-%d" now.UnixNano -}}
+
+{{ if not $consent }}
+  <div id="{{ $id }}"
+       data-leaflet-map
+       data-lat="{{ $lat }}" data-lng="{{ $lng }}" data-zoom="{{ $zoom }}"
+       data-text="{{ $text }}" data-tileurl="{{ $tile }}"
+       style="height: {{ $height }};" class="{{ $class }}">
+  </div>
+{{ else }}
+  <div class="rounded-lg border border-gray-200 p-4 bg-white mb-3">
+    <p class="text-sm text-gray-700">
+      Diese Karte lädt Kacheln von externen Servern (OpenStreetMap).
+      Dabei wird deine IP-Adresse übermittelt. Mit Klick stimmst du dem Laden zu.
+    </p>
+    <button id="btn-{{ $id }}"
+            class="mt-3 inline-flex items-center rounded-md bg-elm-600 px-3 py-1.5 text-white hover:bg-elm-700">
+      Karte laden
+    </button>
+  </div>
+
+  <div id="{{ $id }}" style="height: {{ $height }};" class="{{ $class }} hidden"></div>
+
+  <script type="module">
+    import { initLeafletMap } from "{{ $jsURL }}";
+
+    const btn = document.getElementById("btn-{{ $id }}");
+    const el  = document.getElementById("{{ $id }}");
+    const doInit = () => {
+      btn?.closest('div')?.classList.add('hidden');
+      el.classList.remove('hidden');
+      initLeafletMap(el, {
+        lat: parseFloat("{{ $lat }}"),
+        lng: parseFloat("{{ $lng }}"),
+        zoom: parseInt("{{ $zoom }}", 10),
+        text: {{ $text | jsonify }},
+        tileUrl: {{ $tile | jsonify }}
+      });
+      {{ if $remember }} try { localStorage.setItem("ct_map_consent", "1"); } catch(e){} {{ end }}
+    };
+
+    btn?.addEventListener("click", doInit);
+
+    // Auto-Laden bei gemerkter Zustimmung
+    {{ if $remember }}
+      try {
+        if (localStorage.getItem("ct_map_consent") === "1") {
+          doInit();
+        }
+      } catch(e){}
+    {{ end }}
+  </script>
+{{ end }}
+

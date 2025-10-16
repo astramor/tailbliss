@@ -1,0 +1,157 @@
+{{ define "main" }}
+
+<article>
+
+  <!-- =========================================================
+       HERO / JUMBOTRON
+       ========================================================= -->
+  <div class="w-full mb-4 bg-primary-600">
+    {{ with .Params.featured_image }}
+      {{ with resources.Get . }}
+        {{ $w480  := .Fill "854x480 webp q80" }}
+        {{ $w960  := .Fill "1706x960 webp q80" }}
+        {{ $w1600 := .Fill "2844x1600 webp q80" }}
+        {{ $srcset := printf "%s 480w, %s 960w, %s 1600w" $w480.RelPermalink $w960.RelPermalink $w1600.RelPermalink }}
+        <picture>
+  <source type="image/webp" srcset="{{ $srcset }}" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1280px">
+  <img
+    src="{{ $w960.RelPermalink }}"
+    srcset="{{ $srcset }}"
+    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1280px"
+    alt="{{ with $.Params.featured_alt }}{{ . }}{{ else }}{{ $.Title }}{{ end }}"
+    class="sm:h-[13em] lg:h-[14rem] w-full object-cover
+           border-2 border-elm-600 md:sticky
+           object-[50%_35%] md:object-[50%_25%] lg:object-[50%_20%]"
+    decoding="async" loading="eager">
+</picture>
+
+      {{ end }}
+    {{ else }}
+       <div class="sm:h-[16em] lg:h-[32rem] min-h-[16em] max-h-[32rem] border-[1px] sm:border-2 border-elm-600 bg-primary-600"></div>
+    {{ end }}
+  </div>
+
+  <!-- =========================================================
+       WILLKOMMEN / INTRO
+       ========================================================= -->
+ <section class="bg-elm-100 py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-4xl mx-auto">
+   <!-- Kopfbereich -->
+    <header class="text-center md:text-left">
+
+        {{ with .Params.subtitle }}
+          <p class="text-sm sm:text-base font-semibold text-elm-500">
+            {{ . }}
+          </p>
+        {{ end }}
+
+         <h1 class="mt-2 text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-gray-900">
+
+          {{ .Title }}
+        </h1>
+    </header>
+       {{ with .Params.intro }}
+        <!-- Einleitender Text; typografisch etwas größer -->
+       <p class="mt-4 sm:mt-6 text-base sm:text-lg leading-relaxed text-gray-700">
+          {{ . | markdownify  }}
+        </p>
+      {{ end }}
+
+          {{ with .Params.sections }}
+            <dl class="mt-6 space-y-3 text-base text-gray-700">
+              {{ range . }}
+                <div class="relative pl-9">
+                  <dt class="inline font-semibold text-elm-500">
+                    <span class="icon-[{{ .icon }}] absolute left-1 top-1" style="font-size:20px;"></span>
+                  </dt>
+                   <dd class="inline text-base sm:text-lg leading-relaxed"><strong>{{ .title }}</strong> {{ .text }}</dd>
+                </div>
+              {{ end }}
+            </dl>
+          {{ end }}
+
+          {{ with .Params.info }}
+            <p class="mt-4 sm:mt-6 text-base sm:text-lg leading-relaxed text-gray-700">{{ . }}</p>
+          {{ end }}
+
+          {{ with .Params.sectionsinfo }}
+            <dl class="mt-4 space-y-3 text-base text-gray-700">
+              {{ range . }}
+                <div class="relative pl-9">
+                  <dt class="inline font-semibold text-elm-500">
+                    <span class="icon-[{{ .icon }}] absolute left-1 top-1" style="font-size:20px;"></span>
+                  </dt>
+                  <dd class="inline text-base sm:text-lg leading-relaxed"><strong>{{ .title }}</strong> {{ .text }}</dd>
+                </div>
+              {{ end }}
+            </dl>
+          {{ end }}
+
+          {{ with .Params.ende }}
+            <p class="mt-4 sm:mt-6 text-base sm:text-lg leading-relaxed text-gray-700">{{ . }}</p>
+          {{ end }}
+        </div>
+      </div>
+    </section>
+
+    {{ $ctx := . }}
+    {{ with .Params.sectionsTeam }}
+   <!-- =========================================================
+     Team/Personenliste
+     ========================================================= -->
+<section class="bg-secondary-100 rounded-2xl ring-1 ring-elm-100 shadow-sm relative px-4 py-8 mx-auto max-w-5xl md:px-24 lg:px-8 lg:py-10 ct-container section-gap">
+
+  <div class="max-w-5xl mb-8 md:mx-auto sm:text-center md:mb-10">
+
+          <div class="mx-auto max-w-2xl text-center mb-6 sm:mb-10">
+            <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-tight tracking-tight">{{ .title }}</h2>
+            <p class="mt-4 sm:mt-6 text-base sm:text-lg leading-relaxed text-gray-700">
+{{ .text }}</p>
+          </div>
+
+          <div class="grid gap-6 sm:gap-8 md:grid-cols-2">
+            {{ $pages := where $ctx.Site.RegularPages "Section" "seelsorge" }}
+            {{ $bios  := where $pages "Draft" "==" false }}
+            {{ range $idx, $member := $bios }}
+              <article class="relative bg-elm-100 rounded-xl shadow-sm ring-1 ring-elm-200/60 p-5">
+                <div class="flex flex-row items-start gap-4">
+                  <div class="shrink-0">
+                    {{ with resources.Get $member.Params.avatar }}
+                      {{ partial "picture.html" (dict
+                        "img"   .
+                        "alt"   (printf "Profilbild %s" $member.Params.name)
+                        "class" "w-20 h-auto sm:w-32 md:w-40 object-cover ring-1 ring-elm-200/60"
+                        "lazy"  true
+                        "webp"  true
+                        "lqip"  true
+                      ) }}
+                    {{ else }}
+                      <div class="w-20 h-auto sm:w-32 md:w-40 bg-gray-200"></div>
+                    {{ end }}
+                  </div>
+
+                  <div class="min-w-0 flex-1">
+                    <h4 class="font-semibold leading-6 text-gray-900 text-base sm:text-lg md:text-xl">
+                      <a class="hover:underline" href="{{ $member.RelPermalink }}">{{ $member.Params.name }}</a>
+                    </h3>
+                    {{ with $member.Params.motivation }}
+                      <p class="mt-3 text-sm sm:text-base text-gray-700 line-clamp-3">{{ . }}</p>
+                    {{ end }}
+                    <div class="mt-3">
+                      <a class="inline-flex items-center text-elm-600 hover:text-elm-700 hover:underline"
+                         href="{{ $member.RelPermalink }}">Mehr lesen →</a>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            {{ end }}
+          </div>
+        </div>
+      </section>
+    {{ end }}
+
+  </div>
+
+</article>
+
+{{ end }}

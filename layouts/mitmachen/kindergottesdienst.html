@@ -1,0 +1,643 @@
+{{ define "main" }}
+
+<article>
+
+  <!-- =========================================================
+       HERO / JUMBOTRON
+       ========================================================= -->
+  <div class="w-full mb-4 bg-primary-600">
+    {{ with .Params.featured_image }}
+      {{ with resources.Get . }}
+        {{ $w480  := .Fill "854x480 webp q80" }}
+        {{ $w960  := .Fill "1706x960 webp q80" }}
+        {{ $w1600 := .Fill "2844x1600 webp q80" }}
+        {{ $srcset := printf "%s 480w, %s 960w, %s 1600w" $w480.RelPermalink $w960.RelPermalink $w1600.RelPermalink }}
+        <picture>
+          <source type="image/webp" srcset="{{ $srcset }}" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1280px">
+          <img
+            src="{{ $w960.RelPermalink }}"
+            srcset="{{ $srcset }}"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1280px"
+            alt="{{ with $.Params.featured_alt }}{{ . }}{{ else }}{{ $.Title }}{{ end }}"
+            class="sm:h-[13em] lg:h-[14rem] w-full object-cover border-2 border-elm-600"
+            decoding="async" loading="eager"
+            style="background-position:70%;">
+        </picture>
+      {{ end }}
+    {{ else }}
+       <div class="sm:h-[16em] lg:h-[32rem] min-h-[16em] max-h-[32rem] border-[1px] sm:border-2 border-elm-600 bg-primary-600"></div>
+    {{ end }}
+  </div>
+  <!-- =========================================================
+       WILLKOMMEN / INTRO
+       ========================================================= -->
+ <section class="bg-elm-100 py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-4xl mx-auto">
+   <!-- Kopfbereich -->
+    <header class="text-center md:text-left">
+
+        {{ with .Params.subtitle }}
+          <p class="text-sm sm:text-base font-semibold text-elm-500">
+            {{ . }}
+          </p>
+        {{ end }}
+
+         <h1 class="mt-2 text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-gray-900">
+
+          {{ .Title }}
+        </h1>
+    </header>
+       {{ with .Params.intro }}
+        <!-- Einleitender Text; typografisch etwas größer -->
+       <p class="mt-4 sm:mt-6 text-base sm:text-lg leading-relaxed text-gray-700">
+          {{ . | markdownify  }}
+        </p>
+      {{ end }}
+      
+         <!-- ============== INTRO: 2 SPALTEN (MOBILE 1) ============== -->
+            <section class="bg-elm-100 py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 items-start gap-8 md:gap-10">
+
+
+ <!-- Linke Spalte: Introbild (Lightbox) -->
+        <div>
+          {{ $imgPath := or .Params.thumbnail_image .Params.featured_image }}
+          {{ with resources.Get $imgPath }}
+            {{ $full := .Resize "1920x webp q85" }}
+            <figure class="group relative overflow-hidden rounded-2xl shadow-md ring-1 ring-elm-100">
+              <button type="button"
+                      class="relative block w-full text-left"
+                      aria-label="Bild in großer Ansicht öffnen"
+                      @click="$store.lb.open($el.querySelector('img[data-lb=img]'))">
+                <div class="relative aspect-[4/3] md:aspect-[3/2]">
+                  <div class="absolute inset-0 transition-transform duration-300 group-hover:scale-[1.01]">
+                    {{ partial "picture.html" (dict
+                      "img"   .
+                      "alt"   (printf "%s – Introbild" $.Title)
+                      "class" "h-full w-full object-cover object-center cursor-zoom-in"
+                      "lazy"  true
+                      "webp"  true
+                      "lqip"  true
+                      "attrs" (dict
+                        "data-lb"         "img"
+                        "data-lb-group"   "pfadfinder-intro"
+                        "data-lb-src"     $full.RelPermalink
+                        "data-lb-caption" (printf "%s – Introbild" $.Title)
+                      )
+                    ) }}
+                  </div>
+                </div>
+                <div class="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition group-hover:bg-black/15 group-hover:opacity-100">
+                  <span class="icon-[mdi--magnify-plus-outline] text-white text-2xl drop-shadow"></span>
+                </div>
+              </button>
+            </figure>
+          {{ end }}
+        </div>
+
+
+<!-- Rechte Spalte: Intro + 2 Karten mit Prose (mit geschützten Kontaktdaten) -->
+<div class="space-y-4 sm:space-y-5">
+  {{/* Introtext (falls vorhanden) */}}
+  {{ with .Params.intro_extra }}
+    <div class="prose max-w-none text-gray-700">
+      <div class="ct-prose body-text">{{ . | markdownify }}</div>
+    </div>
+  {{ end }}
+
+  {{ with .Params.sections }}
+    {{ $treffen := index . 0 }}
+    {{ $termin  := index . 1 }}
+    {{ $p := $.Page }}
+
+    {{ with $treffen }}
+      <!-- Karte 1: Treffen -->
+       <article class="relative bg-elm-100 rounded-xl shadow-sm ring-1 ring-elm-200/60 p-5">
+
+        <!-- Header-Zeile: Icon + Überschrift auf einer Linie -->
+        <div class="flex items-center gap-3 sm:gap-4">
+          {{ with .icon }}
+            <span class="inline-flex w-9 h-9 sm:w-10 sm:h-10 items-center justify-center rounded-full bg-elm-100 text-elm-600 shrink-0">
+              <i class="icon-[{{ . }}] text-[22px] sm:text-[24px]"></i>
+            </span>
+          {{ end }}
+          {{ with .title }}
+            <h4 class="font-semibold leading-6 text-gray-900 text-base sm:text-lg md:text-xl min-w-0 break-words">
+              {{ . }}
+            </h4>
+          {{ end }}
+        </div>
+
+        <!-- Body: Text darunter, linksbündig -->
+        {{ with .text }}
+         <p class="mt-2 sm:mt-4 text-base text-gray-700">
+
+{{ . | markdownify }}</p>
+        {{ end }}
+
+        {{/* Geschützte Kontaktzeilen */}}
+        {{ if or .name .phone .email }}
+          <div class="prose prose-base max-w-none text-gray-700 mt-3 sm:mt-4 prose-p:my-0.5 prose-ul:my-1.5 prose-li:my-0.5 prose-li:marker:text-elm-500 text-left">
+            {{ with .name }}
+              <p class="m-0">{{ . }}</p>
+            {{ end }}
+            {{ with .phone }}
+              <p class="m-0">
+                {{ $p.RenderString (printf `{{< protect type="phone" phone="%s" >}}` .) }}
+              </p>
+            {{ end }}
+            {{ with .email }}
+              <p class="m-0">
+                {{ $p.RenderString (printf `{{< protect type="email" email="%s" >}}` .) }}
+              </p>
+            {{ end }}
+          </div>
+        {{ end }}
+      </article>
+    {{ end }}
+
+    {{ with $termin }}
+      <!-- Karte 2: Info -->
+       <article class="relative bg-elm-100 rounded-xl shadow-sm ring-1 ring-elm-200/60 p-5">
+
+        <!-- Header-Zeile: Icon + Überschrift auf einer Linie -->
+        <div class="flex items-center gap-3 sm:gap-4">
+          {{ with .icon }}
+            <span class="inline-flex w-9 h-9 sm:w-10 sm:h-10 items-center justify-center rounded-full bg-elm-100 text-elm-600 shrink-0">
+              <i class="icon-[{{ . }}] text-[22px] sm:text-[24px]"></i>
+            </span>
+          {{ end }}
+          <h4 class="font-semibold leading-6 text-gray-900 text-base sm:text-lg md:text-xl min-w-0 break-words">
+            Info
+          </h4>
+        </div>
+
+        <!-- Body: Text darunter, linksbündig -->
+                {{ with .text }}
+          <p class="mt-2 sm:mt-2 text-base sm:text-base text-gray-700">
+{{ . | markdownify }}</p>
+        {{ end }}
+
+        {{/* Geschützte Kontaktzeilen */}}
+        {{ if or .name .phone .email }}
+          <div class="prose prose-base max-w-none text-gray-700 mt-1 sm:mt-2 prose-p:my-0.5 prose-ul:my-1.5 prose-li:my-0.5 prose-li:marker:text-elm-500 text-left">
+            {{ with .name }}<p class="mt-3 text-base text-gray-700">{{ . }}</p>{{ end }}
+            {{ with .phone }}
+              <p class="mt-3 text-base text-gray-700">
+                {{ $p.RenderString (printf `{{< protect type="phone" phone="%s" >}}` .) }}
+              </p>
+            {{ end }}
+            {{ with .email }}
+              <p class="mt-3 text-base text-gray-700">
+                {{ $p.RenderString (printf `{{< protect type="email" email="%s" >}}` .) }}
+              </p>
+            {{ end }}
+          </div>
+        {{ end }}
+      </article>
+    {{ end }}
+
+  {{ end }}
+</div>
+
+
+
+            </div>
+          </section>
+
+
+  <!-- =========================================================
+       TERMINE (links) + ASIDE-BILD (rechts, 16:9) =
+       ========================================================= -->
+
+<section class="relative px-4 py-12 mx-auto max-w-5xl sm:py-16 px-4 lg:px-8">
+  <div class="max-w-4xl sm:text-center mx-auto">
+    <h2 class="text-center mt-4 mb-6 text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-tight tracking-tight">
+      Termine Kindergottesdienst
+    </h2>
+  </div>
+
+  {{/* === Jetzt (auf Tagesbeginn) + Roll-Over-Regel wie bei Gottesdiensten === */}}
+  {{ $now := now }}
+  {{ $cutoffDate := time (time.Format "2006-01-02" $now) }}
+  {{ $curYear  := $now.Year }}
+  {{ $curMonth := $now.Month }}
+  {{ $allowRollover := or (eq $curMonth 11) (eq $curMonth 12) }}
+
+  {{/* === KiGo-Termine aus .Params.kigotermine.monate[].aktion flatten + filtern === */}}
+  {{ $kigo := slice }}
+  {{ with .Params.kigotermine.monate }}
+    {{ range . }}
+      {{ range .aktion }}
+        {{/* erwartet .datum = "dd.mm." */}}
+        {{ $dd := substr .datum 0 2 }}
+        {{ $mm := substr .datum 3 2 }}
+        {{ $year := $curYear }}
+
+        {{ $isoThis := printf "%04d-%s-%s" $year $mm $dd }}
+        {{ $tThis := time $isoThis }}
+
+        {{ if lt $tThis $cutoffDate }}
+          {{ if and $allowRollover (or (eq $mm "01") (eq $mm "02")) }}
+            {{ $year = add $curYear 1 }}
+          {{ else }}
+            {{ continue }}
+          {{ end }}
+        {{ end }}
+
+        {{ $iso := printf "%04d-%s-%s" $year $mm $dd }}
+        {{ $t := time $iso }}
+        {{ if ge $t $cutoffDate }}
+          {{ $kigo = $kigo | append (merge . (dict "__date" $t "__iso" $iso "__year" $year)) }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+  {{/* sortiert aufsteigend */}}
+  {{ $kigo = sort $kigo "__date" "asc" }}
+
+  {{/* Monatsnamen + Header-Startmonat wie bei Gottesdiensten */}}
+  {{ $monthNames := dict "01" "Januar" "02" "Februar" "03" "März" "04" "April" "05" "Mai" "06" "Juni" "07" "Juli" "08" "August" "09" "September" "10" "Oktober" "11" "November" "12" "Dezember" }}
+  {{ $firstMonth := "" }}
+  {{ range $kigo }}
+    {{ $m := substr .datum 3 2 }}
+    {{ if eq $firstMonth "" }}{{ $firstMonth = index $monthNames $m }}{{ end }}
+  {{ end }}
+
+  <div class="grid gap-8 md:gap-10 lg:grid-cols-[0.9fr_1.1fr] items-start">
+
+    <!-- MOBILE: Kartenansicht -->
+    <div class="space-y-3 md:hidden">
+      {{ if not (gt (len $kigo) 0) }}
+        <p class="text-center text-gray-600">Aktuell keine anstehenden KiGo-Termine.</p>
+      {{ else }}
+        {{ $currentMobileMonth := "" }}
+        {{ range $kigo }}
+          {{ $mm := substr .datum 3 2 }}
+          {{ $monthName := index $monthNames $mm }}
+
+          {{ if ne $mm $currentMobileMonth }}
+            <div class="bg-elm-200/90 text-gray-800 text-center uppercase font-bold tracking-wide px-3 py-2 rounded">
+              {{ $monthName }}
+            </div>
+          {{ end }}
+
+          <article class="rounded-xl bg-white ring-1 ring-elm-200/60 shadow-sm px-3 py-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="shrink-0 text-elm-600 font-semibold text-[13px] sm:text-[14px] leading-6 tracking-wide">
+                {{ .datum }}
+              </span>
+              <span class="shrink-0 h-5 w-px bg-elm-200/80"></span>
+              <p class="m-0 flex-1 min-w-0 text-gray-900 text-[15px] sm:text-[16px] leading-6 whitespace-nowrap overflow-hidden text-ellipsis">
+                {{ .treffen }}
+              </p>
+            </div>
+          </article>
+
+          {{ $currentMobileMonth = $mm }}
+        {{ end }}
+      {{ end }}
+    </div>
+
+    <!-- DESKTOP/TABLET: Tabelle -->
+    <div class="hidden md:block">
+      <div class="relative overflow-hidden rounded-lg ring-1 ring-elm-200/60 bg-white">
+        <div class="overflow-x-auto overflow-y-auto max-h-96">
+          <table class="w-full table-auto text-gray-900 text-sm sm:text-base">
+            <colgroup>
+              <col class="w-28 sm:w-28 md:w-32"><!-- Datum -->
+              <col><!-- Treffen -->
+            </colgroup>
+
+            <thead class="bg-elm-200/90 uppercase text-elm-900 sticky top-0 z-10">
+              <tr>
+                <th class="text-center font-bold px-3 py-3 text-[13px] sm:text-[15px] tracking-wide">{{ $firstMonth }}</th>
+                <th class="text-center font-bold px-3 py-3 text-[13px] sm:text-[15px] tracking-wide">Treffen</th>
+              </tr>
+            </thead>
+
+            <tbody class="divide-y divide-elm-100">
+              {{ if not (gt (len $kigo) 0) }}
+                <tr><td colspan="2" class="px-4 py-6 text-center text-gray-600">Aktuell keine anstehenden KiGo-Termine.</td></tr>
+              {{ else }}
+                {{ $currentMonth := "" }}
+                {{ $row := 0 }}
+                {{ range $kigo }}
+                  {{ $mm := substr .datum 3 2 }}
+                  {{ $monthName := index $monthNames $mm }}
+
+                  {{ if and (ne $mm $currentMonth) (ne $currentMonth "") }}
+                    <tr>
+                      <td colspan="2" class="bg-elm-200/90 text-gray-800 text-center uppercase font-bold tracking-wide px-4 py-3">
+                        {{ $monthName }}
+                      </td>
+                    </tr>
+                  {{ end }}
+
+                  {{ $isEven := eq (mod $row 2) 0 }}
+                  <tr class="{{ if $isEven }}bg-elm-50 hover:bg-elm-100{{ else }}bg-elm-100 hover:bg-elm-100{{ end }} transition-colors">
+                    <td class="px-3 md:px-4 py-3 md:py-4 text-center border-r border-elm-100">
+                      <span class="block text-[15px] sm:text-[16px] leading-6">{{ .datum }}</span>
+                    </td>
+                    <td class="px-4 md:px-6 py-3 md:py-4">
+                      <span class="block text-[15px] sm:text-[16px] leading-6">
+                        {{ .treffen }}
+                      </span>
+                    </td>
+                  </tr>
+
+                  {{ $currentMonth = $mm }}
+                  {{ $row = add $row 1 }}
+                {{ end }}
+              {{ end }}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aside-Bild (16:9) -->
+    <aside class="w-full max-w-none lg:mx-0">
+      {{ $sideImgPath := or .Params.pfadfindertermine_image "images/pages/mitmachen/pfadfinder/pfadfindertermine.jpg" }}
+      {{ $caption := or .Params.pfadfindertermine_alt (printf "%s – Pfadfindertermine" .Title) }}
+      {{ with resources.Get $sideImgPath }}
+        {{ $full := .Resize "1920x1080 webp q85" }}
+        <figure class="rounded-2xl overflow-hidden shadow-md ring-1 ring-elm-200/60">
+          <div class="relative aspect-[16/9]">
+            <div class="absolute inset-0">
+              {{ partial "picture.html" (dict
+                "img"       .
+                "alt"       $caption
+                "class"     "h-full w-full object-cover object-center"
+                "lazy"      true
+                "webp"      true
+                "lqip"      true
+                "lb"        true
+                "lbGroup"   "kigo-termine"
+                "lbCaption" $caption
+                "lbSrc"     $full.RelPermalink
+              ) }}
+            </div>
+          </div>
+        </figure>
+      {{ else }}
+        <div class="rounded-2xl overflow-hidden shadow-md ring-1 ring-elm-200/60 bg-elm-200 aspect-[16/9]"></div>
+      {{ end }}
+    </aside>
+
+  </div>
+</section>
+
+  <!-- =========================================================
+      Horizontales Bild
+       ========================================================= -->
+  {{ $parallaxPath := or .Params.pfadfinder_parallax_image .Params.thumbnail_image }}
+  {{ with $parallaxPath }}
+    {{ with resources.Get . }}
+      {{ $w2048 := .Resize "2048x1152 webp q85" }}
+      <section class="relative mt-12 ct-container section-gap">
+        <div class="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
+          <div class="w-screen bg-cover bg-center bg-no-repeat overflow-hidden bg-scroll md:bg-fixed
+                      h-[108px] sm:h-[148px] md:h-[188px] lg:h-[228px] xl:h-[280px]"
+               style="background-image: url('{{ $w2048.RelPermalink }}');">
+          </div>
+        </div>
+      </section>
+    {{ end }}
+  {{ end }}
+
+  <!-- =========================================================
+      Gruppen
+       ========================================================= -->
+  <section class="bg-secondary-100 rounded-2xl ring-1 ring-elm-100 shadow-sm relative px-4 py-8 mx-auto max-w-5xl md:px-24 lg:px-8 lg:py-10 ct-container section-gap">    
+
+      <div class="text-center max-w-5xl mb-8 md:mx-auto sm:text-center md:mb-10">
+        <h2 class="mt-4 text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-tight tracking-tight">{{ .Params.gruppen_ueberschrift}}</h2>
+        <p class="mt-4 sm:mt-6 text-base sm:text-lg leading-relaxed text-gray-700">{{ .Params.gruppen_text}}</p>
+      </div>        
+
+
+
+
+{{ with .Params.sippen }}
+  <!-- Volle Breite + gleichmäßige Verteilung -->
+  <div class="grid w-full gap-y-6 gap-x-6 sm:gap-8 
+              grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 
+              justify-items-stretch">
+    {{ range . }}
+      <article class="bg-elm-100 rounded-xl shadow-sm ring-1 ring-elm-200/60 
+                      overflow-hidden flex flex-row sm:flex-col 
+                      items-center text-left sm:text-center 
+                      p-4 sm:p-5 w-full">
+        {{ $img := resources.Get .image }}
+
+        <!-- Logo -->
+        <div class="w-20 h-20 sm:w-40 sm:h-40 flex items-center justify-center bg-white rounded-md overflow-hidden">
+          {{ if $img }}
+            {{ partial "picture.html" (dict
+              "img"   $img
+              "alt"   .name
+              "class" "w-full h-full object-contain object-center"
+              "lazy"  true
+              "webp"  true
+              "lqip"  false  
+            ) }}
+          {{ else }}
+            <div class="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400 text-xs">
+              Kein Bild
+            </div>
+          {{ end }}
+        </div>
+
+        <!-- Textbereich -->
+        <div class="flex-1 px-4 sm:px-0 sm:mt-4 sm:flex sm:flex-col sm:items-center sm:text-center">
+          <h4 class="font-semibold leading-6 text-gray-900 text-base sm:text-lg md:text-lg break-words">{{ .name }}</h4>
+          {{ with .rolle }}<p class="text-sm sm:text-base text-gray-600 mt-0.5">{{ . }}</p>{{ end }}
+          {{ with .text }}<p class="text-sm sm:text-base text-gray-600 mt-0.5">{{ . }}</p>{{ end }}
+          {{ with .alter }}<p class="text-sm sm:text-base text-gray-600 mt-0.5">{{ . }}</p>{{ end }}
+          {{ with .links }}
+            <div class="mt-3 sm:mt-4 flex items-center sm:justify-center gap-3 text-gray-500">
+              {{ range . }}
+                <a href="{{ .url }}" class="inline-flex p-2 rounded-md hover:bg-elm-50" target="_blank" rel="noopener">
+                  <span class="icon-[{{ .icon }}] w-5 h-5"></span>
+                </a>
+              {{ end }}
+            </div>
+          {{ end }}
+        </div>
+      </article>
+    {{ end }}
+  </div>
+{{ end }}
+          </div>
+        </section>
+
+  <!-- =========================================================
+      Divider
+
+          <div>
+            <div class="relative">
+              <div class="h-[2px] sm:h-[3px] w-full bg-elm-200 rounded-full"></div>
+              <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-elm-100 px-3 py-1 rounded-full ring-1 ring-elm-200">
+                <span class="icon-[mdi--balloon] text-primary-700 text-lg"></span>
+              </div>
+            </div>
+          </div>	
+       ========================================================= -->
+  <!-- =========================================================
+      Gallerie
+       ========================================================= -->
+{{ with .Params.gallery }}
+<section class="mt-10 sm:mt-12 mb-12 sm:mb-16 ct-container section-gap"
+         x-data="{
+           stepPx: 0,
+           init(){ this.$nextTick(() => this.measure()); new ResizeObserver(() => this.measure()).observe($refs.track) },
+           measure(){
+             const t = this.$refs.track;
+             const card = t.querySelector('[data-card]');
+             if(!card) return;
+             const cs = getComputedStyle(t);
+             const gap = parseFloat(cs.columnGap || cs.gap) || 16;
+             this.stepPx = card.clientWidth + gap;
+           },
+           prev(){ this.$refs.track.scrollBy({ left: -this.stepPx, behavior: 'smooth' }) },
+           next(){ this.$refs.track.scrollBy({ left:  this.stepPx, behavior: 'smooth' }) }
+         }">
+  <!-- WICHTIG: relativer Container für die absoluten Pfeile -->
+  <div class="relative">
+
+    <!-- Track -->
+    <div x-ref="track"
+         class="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory
+                [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
+                md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-5 md:overflow-visible md:snap-none">
+
+      {{ $idx := 0 }}
+      {{ range . }}
+        {{ with resources.Get . }}
+          {{ $full := . }}
+          <figure data-card
+                  class="shrink-0 snap-start rounded-2xl overflow-hidden shadow-md
+                         min-w-full
+                         md:min-w-0 md:w-auto">
+            <div class="relative aspect-[4/3] md:aspect-[3/2]">
+              <div class="absolute inset-0">
+                {{ partial "picture.html" (dict
+                  "img"       .
+                  "alt"       (printf "Kigo Galerie – %s" (path.Base .RelPermalink))
+                  "class"     "h-full w-full object-cover object-center"
+                  "lazy"      true
+                  "webp"      true
+                  "lqip"      true
+                  "lb"        true
+                  "lbGroup"   "kigo-gallery"
+                  "lbCaption" (printf "Kigo Galerie – %s" (path.Base .RelPermalink))
+                  "lbSrc"     $full.RelPermalink
+                ) }}
+              </div>
+            </div>
+          </figure>
+          {{ $idx = add $idx 1 }}
+        {{ end }}
+      {{ end }}
+    </div>
+
+    <!-- Controls: NUR mobil sichtbar, jetzt korrekt relativ positioniert -->
+    <button type="button"
+            class="md:hidden absolute left-2 top-1/2 -translate-y-1/2
+                   inline-flex items-center justify-center w-10 h-10 rounded-full
+                   bg-white/90 text-gray-900 shadow hover:bg-white
+                   focus:outline-none focus:ring-2 focus:ring-primary-600"
+            @click="prev()" aria-label="Zurück">
+      <span class="icon-[mdi--chevron-left] text-2xl"></span>
+    </button>
+
+    <button type="button"
+            class="md:hidden absolute right-2 top-1/2 -translate-y-1/2
+                   inline-flex items-center justify-center w-10 h-10 rounded-full
+                   bg-white/90 text-gray-900 shadow hover:bg-white
+                   focus:outline-none focus:ring-2 focus:ring-primary-600"
+            @click="next()" aria-label="Weiter">
+      <span class="icon-[mdi--chevron-right] text-2xl"></span>
+    </button>
+
+  </div>
+</section>
+{{ end }}
+
+
+
+  <!-- =========================================================
+      Famgo/infos
+       ========================================================= -->
+<section class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 bg-transparent">
+  <div class="mx-auto max-w-4xl">
+    <div class="text-center">
+      <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-tight tracking-tight">
+        {{ .Params.special_ueberschrift }}
+      </h2>
+      {{ with .Params.special_text }}
+        <p class="mt-4 sm:mt-6 text-base sm:text-lg leading-relaxed text-gray-700">{{ . | markdownify }}</p>
+      {{ end }}
+    </div>
+
+    <!-- Haupt-Liste: famgo_sections -->
+    {{ with .Params.famgo_sections }}
+      <dl class="mt-5 space-y-4 text-base text-gray-700">
+        {{ range . }}
+          <div class="relative pl-9">
+            <dt class="font-semibold text-elm-500">
+              <span class="icon-[{{ .icon }}] absolute left-1 top-1" style="font-size:20px;"></span>
+            </dt>
+            <dd class="block">
+               <h4 class="mb-2 font-semibold leading-5 h4 text-gray-900">{{ .title }}</h4>
+
+                <p class="mt-1 sm:mt-2 text-base sm:text-lg leading-relaxed text-gray-700">{{ .text | markdownify }}</p>
+  
+            </dd>
+          </div>
+        {{ end }}
+      </dl>
+    {{ end }}
+
+    <!-- Optional: ein freier Info-Textblock -->
+    {{ with .Params.info }}
+      <div class="mt-4 sm:mt-6 text-lg text-gray-700">
+        <div class="ct-prose body-text">{{ . | markdownify }}</div>
+      </div>
+    {{ end }}
+
+    <!-- Optional: zweite Liste (sectionsinfo) -->
+    {{ with .Params.sectionsinfo }}
+      <dl class="mt-5 space-y-4 text-base text-gray-700">
+        {{ range . }}
+          <div class="relative pl-9">
+            <dt class="font-semibold text-elm-500">
+              <span class="icon-[{{ .icon }}] absolute left-1 top-1" style="font-size:20px;"></span>
+            </dt>
+            <dd class="block">
+              <strong class="text-gray-900">{{ .title }}</strong>
+              <div class="mt-1">
+                <div class="ct-prose body-text">{{ .text | markdownify }}</div>
+              </div>
+            </dd>
+          </div>
+        {{ end }}
+      </dl>
+    {{ end }}
+
+    <!-- Optional: Abschlusstext -->
+    {{ with .Params.ende }}
+      <div class="mt-4 sm:mt-6 text-lg text-gray-700">
+        <div class="ct-prose body-text">{{ . | markdownify }}</div>
+      </div>
+    {{ end }}
+  </div>
+</section><!-- /Stack -->
+
+</article>
+
+
+{{ end }}

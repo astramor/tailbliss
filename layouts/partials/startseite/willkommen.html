@@ -1,0 +1,54 @@
+{{/* ================================
+     Willkommen-Teaser (Startseite)
+     - Semantik: Claim als Text (keine H2)
+     - H1 ist die Hauptüberschrift
+     - Typografie & Abstände zentral via components.css
+     ================================ */}}
+
+{{ with .Params.willkommen }}
+<section class="bg-elm-100">
+  <div class="ct-container section-gap">
+    <!-- Kopfbereich -->
+    <header class="lg:pt-2">
+      {{ with .subtitle }}
+        <!-- War vorher H2; jetzt reiner Text-Claim -->
+        <p class="subtitle">{{ . }}</p>
+      {{ end }}
+
+      {{ with .title }}
+        <!-- Hauptüberschrift der Seite -->
+        <h1 class="h1 mt-2">{{ . }}</h1>
+      {{ end }}
+
+      {{ with .intro }}
+        <!-- Einleitender Text; typografisch etwas größer -->
+        <p class="text-base mt-4 sm:mt-6 text-gray-700">
+          {{ . }}
+        </p>
+      {{ end }}
+    </header>
+
+    <!-- Bullet-Liste mit Icons (Definition List) -->
+    {{ with .sections }}
+      <dl class="mt-8 sm:mt-10 space-y-6 sm:space-y-8 text-gray-700">
+        {{ range . }}
+          <div class="relative pl-9">
+            <dt class="inline font-semibold text-elm-500">
+              <span
+                class="icon-[{{ .icon }}] absolute left-1 top-1"
+                style="font-size:20px"
+                aria-hidden="true"
+              ></span>
+              <span class="sr-only">{{ .icon }}</span>
+            </dt>
+            <dd class="inline text-base sm:text-lg">
+              <strong>{{ .title }}</strong> {{ .text }}
+            </dd>
+          </div>
+        {{ end }}
+      </dl>
+    {{ end }}
+  </div>
+</section>
+{{ end }}
+

@@ -1,0 +1,57 @@
+<!-- Lightbox Modal Root (Alpine) -->
+<div x-data
+     x-cloak
+     x-show="$store.lb.opened"
+     x-transition.opacity
+     class="fixed inset-0 z-[9999]"
+     role="dialog" aria-modal="true" aria-label="Bildanzeige">
+
+  <!-- Backdrop -->
+  <div class="absolute inset-0 bg-black/80" @click="$store.lb.close()"></div>
+
+  <!-- Content -->
+  <div class="relative z-10 flex h-full w-full items-center justify-center p-4"
+       @keydown.window.escape="$store.lb.close()"
+       @keydown.window.arrow-left="$store.lb.prev()"
+       @keydown.window.arrow-right="$store.lb.next()">
+
+    <div class="relative w-full max-w-6xl">
+      <!-- Close oben, höchster z-Index -->
+      <button type="button"
+        class="absolute top-2 right-2 z-30
+               rounded-full bg-secondary-50 text-gray-500 shadow-lg
+               items-center justify-center w-10 h-10 rounded-full bg-white/60 text-gray-900  hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary-600"
+        @click="$store.lb.close()" aria-label="Schließen">
+        <span class="icon-[mdi--close] text-xl"></span>
+	</button>
+
+
+
+      <!-- Bild-Wrapper (unter Close) -->
+      <div class="relative overflow-hidden rounded-2xl bg-black/0 ring-1 ring-elm-200/60 shadow-2xl z-10">
+        <img :src="$store.lb.current.src"
+             :alt="$store.lb.current.caption || ''"
+             class="w-full h-auto object-contain select-none">
+        <div class="px-4 py-2 text-center text-sm text-gray-100/90"
+             x-text="$store.lb.current.caption"></div>
+
+        <!-- Nav-Pfeile zwischen Bild und Close -->
+        <button type="button"
+                class="hidden lg:flex absolute left-2 top-1/2 -translate-y-1/2 z-20
+                       items-center justify-center w-10 h-10 rounded-full bg-white/80 text-gray-900
+                       hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary-600"
+                @click="$store.lb.prev()" aria-label="Vorheriges Bild">
+          <span class="icon-[mdi--chevron-left] text-2xl"></span>
+        </button>
+        <button type="button"
+                class="hidden lg:flex absolute right-2 top-1/2 -translate-y-1/2 z-20
+                       items-center justify-center w-10 h-10 rounded-full bg-white/80 text-gray-900
+                       hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary-600"
+                @click="$store.lb.next()" aria-label="Nächstes Bild">
+          <span class="icon-[mdi--chevron-right] text-2xl"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

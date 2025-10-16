@@ -1,20 +1,156 @@
-{{ define "main"}}
+{{ define "main" }}
 <main id="main">
-    <div class="max-w-screen-xl px-4 py-8 mx-auto lg:py-16 lg:px-6">
-        <div class="max-w-screen-sm mx-auto text-center">
-            <h1 class="mb-4 font-black tracking-tight capitalize text-8xl lg:text-7xl xl:text-9xl dark:text-white">
-                404
-            </h1>
-            <p class="mb-4 text-3xl font-bold tracking-tight text-gray-900 md:text-4xl dark:text-white">
-                Ooooops, something&rsquo;s missing.
-            </p>
-            <p class="mb-4 text-lg font-light text-gray-500 dark:text-gray-400">Sorry, we can't find that page.
-                You'll
-                find lots to explore on the home page. </p>
-            <a href="/"
-                class="inline-flex text-white bg-primary-600 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-900 my-4">Back
-                to Homepage</a>
-        </div>
+  <div class="max-w-screen-xl px-4 py-8 mx-auto lg:py-16 lg:px-6">
+    <div class="max-w-screen-sm mx-auto text-center">
+      <h1 class="mb-4 font-black tracking-tight capitalize text-8xl lg:text-7xl xl:text-9xl">
+        404
+      </h1>
+      <p class="mb-4 text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">
+        Ooooops, hier fehlt etwas.
+      </p>
+      <p class="mb-4 text-lg font-light text-gray-500">
+        Sorry, wir können die Seite nicht finden. Aber es gibt noch viel aus der Seite zu entdecken.
+      </p>
+      <a href="/"
+         class="inline-flex text-white bg-primary-600 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center my-4">
+        Zurück zur Startseite
+      </a>
     </div>
+
+    <!-- BEGIN Pong-Light Minigame -->
+    <div class="max-w-screen-sm mx-auto mt-8 text-center">
+      <h2 class="mb-2 text-2xl font-semibold text-gray-800">Pong-Light</h2>
+      <canvas id="pong" width="600" height="300" class="mx-auto border rounded-lg"></canvas>
+      <p class="mt-2 text-sm text-gray-500">
+        Steuere deinen Schläger mit den Pfeiltasten ↑ und ↓.
+      </p>
+    </div>
+    <!-- END Pong-Light Minigame -->
+  </div>
 </main>
+
+<script>
+
+// ganz oben in deinem <script> …
+window.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+    e.preventDefault();  // deaktiviert das vertikale Scrollen
+  }
+});
+// Canvas & Context
+const canvas = document.getElementById('pong');
+const ctx = canvas.getContext('2d');
+
+// Spiel-Parameter
+const paddleWidth  = 10;
+const paddleHeight = 70;
+const ballSize     = 10;
+let playerY        = (canvas.height - paddleHeight) / 2;
+let aiY            = (canvas.height - paddleHeight) / 2;
+let ballX          = canvas.width / 2 - ballSize/2;
+let ballY          = canvas.height / 2 - ballSize/2;
+let ballSpeedX     = 4;
+let ballSpeedY     = 3;
+let playerScore    = 0;
+let aiScore        = 0;
+
+// Zeichne alle Elemente
+function draw() {
+  ctx.fillStyle = '#F7FAFC';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Mittellinie
+  ctx.strokeStyle = '#CBD5E0';
+  ctx.setLineDash([5, 15]);
+  ctx.beginPath();
+  ctx.moveTo(canvas.width/2, 0);
+  ctx.lineTo(canvas.width/2, canvas.height);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Paddles
+  ctx.fillStyle = '#2B6CB0';
+  ctx.fillRect(0, playerY, paddleWidth, paddleHeight);
+  ctx.fillStyle = '#E53E3E';
+  ctx.fillRect(canvas.width - paddleWidth, aiY, paddleWidth, paddleHeight);
+
+  // Ball
+  ctx.fillStyle = '#4A5568';
+  ctx.fillRect(ballX, ballY, ballSize, ballSize);
+
+  // Score
+  ctx.fillStyle = '#1A202C';
+  ctx.font = '20px sans-serif';
+  ctx.fillText(playerScore, canvas.width/4, 20);
+  ctx.fillText(aiScore, canvas.width*3/4, 20);
+}
+
+// Physik & Logik
+function update() {
+  ballX += ballSpeedX;
+  ballY += ballSpeedY;
+
+  // Abprallen oben/unten
+  if (ballY <= 0 || ballY + ballSize >= canvas.height) {
+    ballSpeedY = -ballSpeedY;
+  }
+
+  // Kollision Player-Paddle
+  if (ballX <= paddleWidth &&
+      ballY + ballSize >= playerY &&
+      ballY <= playerY + paddleHeight) {
+    ballSpeedX = -ballSpeedX;
+    ballSpeedY += (Math.random() - 0.5);
+  }
+  // Kollision AI-Paddle
+  if (ballX + ballSize >= canvas.width - paddleWidth &&
+      ballY + ballSize >= aiY &&
+      ballY <= aiY + paddleHeight) {
+    ballSpeedX = -ballSpeedX;
+    ballSpeedY += (Math.random() - 0.5);
+  }
+
+  // Punkte vergeben
+  if (ballX < 0) {
+    aiScore++;
+    resetBall();
+  }
+  if (ballX + ballSize > canvas.width) {
+    playerScore++;
+    resetBall();
+  }
+
+  // Simple KI
+  const targetY = ballY - (paddleHeight - ballSize)/2;
+  aiY += (targetY - aiY) * 0.1;
+}
+
+// Ball-Reset
+function resetBall() {
+  ballX = canvas.width / 2 - ballSize/2;
+  ballY = canvas.height / 2 - ballSize/2;
+  ballSpeedX = -ballSpeedX;
+  ballSpeedY = 3 * (Math.random() > 0.5 ? 1 : -1);
+}
+
+// Player-Input
+document.addEventListener('keydown', e => {
+  const step = 20;
+  if (e.key === 'ArrowUp') {
+    playerY = Math.max(playerY - step, 0);
+  }
+  if (e.key === 'ArrowDown') {
+    playerY = Math.min(playerY + step, canvas.height - paddleHeight);
+  }
+});
+
+// Game-Loop
+function gameLoop() {
+  update();
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+gameLoop();
+</script>
+
 {{ end }}

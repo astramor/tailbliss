@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   Zentrale Komponenten & Typografie
+   - Heading-Sets abstimmt auf Startseite (H2 größer als H1)
+   - Claim/Untertitel als Text (.subtitle) – keine Überschrift
+   - Einheitliche Container & Abstände
+   ========================================================================== */
+@layer components {
+  /* ---------- Headings ---------- */
+  /* Startseiten-Design nutzt H2 > H1 */
+  .h2 { @apply text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900; }
+
+  /* H1: mobil zentriert, ab md links + Fade-In wie auf Index */
+  .h1 { @apply text-3xl md:text-4xl font-bold tracking-tight text-gray-900
+                 text-center md:text-left animate-fade-in; }
+
+  /* H3: Standard zentriert mit kleinem Fade; für Karten s. .h3-card */
+  .h3 { @apply text-2xl font-semibold tracking-tight text-gray-900 text-center animate-fade-in; }
+
+  .h4 { @apply text-xl font-semibold text-gray-900; }
+
+  /* Optional: H3 linksbündig speziell für Kartenüberschriften */
+  .h3-card { @apply text-2xl font-semibold tracking-tight text-gray-900; }
+
+  /* ---------- Claim / Untertitel (war früher H2) ---------- */
+  .subtitle { @apply text-sm sm:text-base font-semibold text-elm-500 tracking-wide animate-fade-in; }
+
+  /* ---------- Textkörper ---------- */
+  .lead      { @apply text-xl leading-8 text-gray-700; }
+  .body-text { @apply text-lg leading-7 text-gray-800; }
+
+  /* Prosa-Blöcke (Markdown) */
+  .ct-prose { @apply prose max-w-none text-gray-800; }
+  .ct-prose :where(p, ul, ol, li) { @apply text-lg leading-7; }
+  .ct-prose :where(h1,h2,h3,h4)   { @apply text-gray-700; }
+
+  /* ---------- Layout-Rhythmus ---------- */
+  .ct-container { @apply max-w-5xl mx-auto px-6 sm:px-6 lg:px-8; }
+  .section-gap  { @apply py-8 sm:py-10 md:py-12; }
+  .stack-md > * + * { @apply mt-4 sm:mt-5; }
+
+  /* ---------- Karten ---------- */
+  .ct-card { @apply rounded-2xl bg-white p-5 sm:p-6 shadow-sm ring-1 ring-elm-100; }
+}
+

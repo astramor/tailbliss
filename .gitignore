@@ -1,9 +1,59 @@
-node_modules/
-resources/
-public/
-.hugo_build.lock
-.vercel
-yarn-error.log
-# Local Netlify folder
-.netlify
-yarn-error.log
+# -------------------------------
+# Hugo / Static Site Generator
+# -------------------------------
+/public/                 # generierte Ausgabe (nie committen!)
+/resources/_gen/         # generierte Ressourcen (SCSS, JS, etc.)
+/static/
+/static/generated/       # falls du hier dynamische Inhalte erzeugst
+.hugo_build.lock         # Lockfile für Hugo-Build-Prozess
+/static/images/banner    # Files für ctmail
+# -------------------------------
+# Node.js / Paketmanager
+# -------------------------------
+/node_modules/           # alle Abhängigkeiten
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json        # optional ignorieren, wenn du nicht versionierst
+pnpm-lock.yaml           # dito (manche Teams versionieren ihn bewusst!)
+
+# -------------------------------
+# Build-Tools / Bundler
+# -------------------------------
+/dist/                   # falls du JS/CSS baust
+/.cache/                # evtl. von Vite oder anderen Tools
+/.vite/                 # Vite-Cache
+.viteignore             # interne Build-Datei
+
+# -------------------------------
+# Editor / System-Dateien
+# -------------------------------
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# -------------------------------
+# Logs & temporäre Dateien
+# -------------------------------
+*.log
+to_sync.log
+*.tmp
+*.bak
+*.backup
+
+# -------------------------------
+# Secrets & Konfigurationen
+# -------------------------------
+.env
+.env.*
+hugo.yaml               # Nur ignorieren, wenn er lokale Secrets enthält
+
+# -------------------------------
+# Git selbst
+# -------------------------------
+.gitignore
+
